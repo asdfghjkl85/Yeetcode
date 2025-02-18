@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeetcode Chrome Extension</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Screen -->
+    <div id="main-screen" class="screen active">
+        <img src="logo.png" alt="Yeetcode Logo" class="logo">
+        <h1>Yeetcode</h1>
+        <button id="join-team" class="btn">Join Team</button>
+        <button id="create-team" class="btn">Create Team</button>
+    </div>
+
+    <!-- Join Team Screen -->
+    <div id="join-screen" class="screen">
+        <button id="back-to-main-join" class="back-btn">←</button>
+        <h2>Got a <span class="highlight">team code</span>? Paste it here!</h2>
+        <input type="text" id="teamCodeInput" placeholder="Enter Code Here">
+        <button id="confirm-join" class="btn">Join Team</button>
+    </div>
+
+    <!-- Create Team Screen -->
+    <div id="create-screen" class="screen">
+        <button id="back-to-main-create" class="back-btn">←</button>
+        <h2>Invite Code: <span id="inviteCode" class="invite-code">or4L</span></h2>
+        <div class="input-container">
+            <label for="playerName">You</label>
+            <input type="text" id="playerName" placeholder="Player 1">
+        </div>
+        <div class="input-container">
+            <label for="competitorName">Competitor</label>
+            <input type="text" id="competitorName" placeholder="Player 2">
+        </div>
+        <button id="start-game" class="btn">START</button>
+    </div>
+
+
+    <!-- Game Play Screen -->
+    <div id="game-play-screen" class="screen">
+        <h2 id="game-result">Tofudog25 beats Tourist_2</h2>
+        <button id="proceed-btn" class="btn">Proceed</button>
+    </div>
+
+    <!-- Yeet Motion Screen is in separate HTML file-->
+
+
+    <script src="popup.js"></script>
+</body>
+</html>
