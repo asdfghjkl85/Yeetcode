@@ -104,8 +104,13 @@
 <body>
     <div class="container">
         <div class="emoji">( っ'-')╮</div>
-        <div class="text">(Tourist_2)</div>
+        <div id="loser-text" class="text"></div>
         <div class="yeet">Yeet!</div> <!-- "Yeet!" text -->
     </div>ff
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const player1Name = urlParams.get("player1");
+        document.getElementById("loser-text").textContent = player1Name || "Player 1";
+    </script>
 </body>
 </html>
