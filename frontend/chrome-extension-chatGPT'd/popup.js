@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle "Join Team" logic
     confirmJoinBtn.addEventListener("click", function () {
         const teamCode = document.getElementById("teamCodeInput").value.trim();
+        console.log("Hello!")
         if (teamCode) {
             console.log("Joining team with code:", teamCode);
             alert("Successfully joined team " + teamCode);
