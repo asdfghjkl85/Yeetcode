@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
         start_game_button.addEventListener("click", function () {
             //changing the html link to include player1 information (i.e. name)
             const player1Name = document.getElementById("player1Name").value;
-            window.location.href = `assets/yeet_motion_html_files/yeet_motion.html?player1=${encodeURIComponent(player1Name)}`; // Navigate back to main screen
+            localStorage.setItem('loser-username', player1Name);
+            window.location.href = "assets/yeet_motion_html_files/yeet_motion.html"; // Navigate back to main screen
         });
     }
 
