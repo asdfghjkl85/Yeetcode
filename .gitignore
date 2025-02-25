@@ -1,3 +1,4 @@
 /ChromeExtension/Backend/node_modules
 /ChromeExtension/Backend/package-lock.json
 .DS_Store
+/ChromeExtension/Backend/.env
