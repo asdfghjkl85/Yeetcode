@@ -1,3 +1,6 @@
+// Leetcode user API functionality
+//import { leetcodeUser } from "../../../Backend/leetcode_user";
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Only attach event listener if the button exists on the current page
@@ -5,16 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (back_to_main_button) {
         back_to_main_button.addEventListener("click", function () {
             window.location.href = "main-screen.html"; // Navigate back to main screen
-        });
-    }
-
-    let start_game_button = document.getElementById("start-game");
-    if (start_game_button) {
-        start_game_button.addEventListener("click", function () {
-            //changing the html link to include player1 information (i.e. name)
-            const player1Name = document.getElementById("player1Name").value;
-            localStorage.setItem('loser-username', player1Name);
-            window.location.href = "assets/yeet_motion_html_files/yeet_motion.html"; // Navigate back to main screen
         });
     }
 
@@ -31,5 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = "join-team-screen.html"; // Navigate to Join Team page
         });
     }
+
+    let start_game_button = document.getElementById("start-game-button");
+    if (start_game_button) {
+        start_game_button.addEventListener("click", function () {
+            window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+        });
+    }
+
 
 });
