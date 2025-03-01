@@ -1,3 +1,6 @@
+// Leetcode user API functionality
+//import { leetcodeUser } from "../../../Backend/leetcode_user";
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Only attach event listener if the button exists on the current page
