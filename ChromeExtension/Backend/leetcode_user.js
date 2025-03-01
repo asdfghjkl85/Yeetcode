@@ -24,6 +24,4 @@ async function getUserData(user, params) {
     return userData;
 }
 
-module.exports = {
-    getUserData: getUserData,
-};
+export default getUserData;
