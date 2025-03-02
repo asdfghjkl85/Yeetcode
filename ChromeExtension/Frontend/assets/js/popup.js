@@ -1,5 +1,5 @@
 // Leetcode user API functionality
-//import { leetcodeUser } from "../../../Backend/leetcode_user";
+//import getUserData from "./../../../Backend/leetcode_user.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
