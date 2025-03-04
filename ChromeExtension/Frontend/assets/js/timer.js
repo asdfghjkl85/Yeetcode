@@ -3,6 +3,17 @@ var numMinutes = 10;
 var numSeconds = 0;
 
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
+const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
+
+function toggleCheckmark(element) {
+    if (element.textContent === "🟡") {
+        element.textContent = "✔️";
+        element.style.color = "green";
+    } else {
+        element.textContent = "🟡";
+        element.style.color = "black";
+    }
+}
 
 function getNextTime(hours, minutes, seconds) {
     //precondition: hours, minutes, and/or seconds > 0
