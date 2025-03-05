@@ -1,8 +1,7 @@
 import updateSubmission from "./game_loop.js";
 
 async function main(player1, player2, problemList) {
-    await updateSubmission(player1, player2, problemList)
-    .then()
+    const correctSubmissions = updateSubmission(player1, player2, problemList)
     console.log(correctSubmissions);
 }
 
