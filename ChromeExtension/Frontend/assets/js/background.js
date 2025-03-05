@@ -9,3 +9,17 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
         message: "connected"
     })
   })
+
+    //anti cheat functions
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if(chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        return;
+    }
+
+    console.log("THIS IS THE TAB URL: " + tab.url)
+    if (tab.url && tab.url.includes("https://chatgpt.com/")) {
+        chrome.tabs.remove(tabId); 
+        console.log("Chatgpt is not allowed while running our extension.")
+    }
+})
