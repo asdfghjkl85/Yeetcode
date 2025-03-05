@@ -3,7 +3,7 @@
   "name": "Hello Yeetcode",
   "version": "1.0",
   "description": "Yeetcode extension for cs geeks",
-  "permissions": ["storage", "tabs", "sidePanel"],
+  "permissions": ["storage", "tabs", "sidePanel", "windows"],
   "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "Frontend/main-screen.html"
