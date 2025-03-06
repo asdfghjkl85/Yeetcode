@@ -1,4 +1,4 @@
-import updateSubmission from "./../../../Backend/game_loop.js";
+import updateSubmission from "../../../Backend/utils/gameLoop.js";
 
 const CHECKING_IF_PASSED = true; //Can change this to true if want to check a submission passed
 const CYCLE_AMOUNT = 15; //Number of seconds per API Call
