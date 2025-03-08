@@ -1,6 +1,6 @@
 //Not a unit test js file, but can test basic functionality
-import getUserData from "./leetcode_user.js"
-const userList = ["Tofudog25"];
+import getUserData from "../utils/leetcodeUser.js"
+const userList = ["Errichto"];
 const params = ["recentSubmissions"];
 
 async function main() {
