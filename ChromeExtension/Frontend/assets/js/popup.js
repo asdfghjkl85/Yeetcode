@@ -28,6 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let start_game_button = document.getElementById("start-game-button");
     if (start_game_button) {
         start_game_button.addEventListener("click", function () {
+            const player1Name = document.getElementById("player1Name").value;
+            const player2Name = document.getElementById("player2Name").value;
+            localStorage.setItem("Player1", player1Name);
+            localStorage.setItem("Player2", player2Name);
             window.location.href = "game-play-screen.html"; // Navigate to Join Team page
         });
     }

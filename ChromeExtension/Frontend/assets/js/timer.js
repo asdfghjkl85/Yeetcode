@@ -24,6 +24,13 @@ var numSeconds = 0;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
+document.addEventListener("DOMContentLoaded", function () {
+    const player1Name = localStorage.getItem("Player1");
+    const player2Name = localStorage.getItem("Player2");
+    document.getElementById("gamePlayer1").innerText = player1Name;
+    document.getElementById("gamePlayer2").innerText = player2Name;
+});
+
 function getNextTime(hours, minutes, seconds) {
     //precondition: hours, minutes, and/or seconds > 0
     if (seconds === 0) {
