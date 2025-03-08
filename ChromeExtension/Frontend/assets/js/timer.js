@@ -2,8 +2,8 @@ import updateSubmission from "../../../Backend/utils/gameLoop.js";
 
 const CHECKING_IF_PASSED = true; //Can change this to true if want to check a submission passed
 const CYCLE_AMOUNT = 15; //Number of seconds per API Call
-const PLAYER1 = "sun2001128";
-const PLAYER2 = "Tofudog25";
+let PLAYER1 = ""; //both players will be defined by the user
+let PLAYER2 = "";
 const PROBLEM_LIST = [
     "two-sum",
     "big-countries",
@@ -27,6 +27,8 @@ const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 document.addEventListener("DOMContentLoaded", function () {
     const player1Name = localStorage.getItem("Player1");
     const player2Name = localStorage.getItem("Player2");
+    PLAYER1 = player1Name;
+    PLAYER2 = player2Name;
     document.getElementById("gamePlayer1").innerText = player1Name;
     document.getElementById("gamePlayer2").innerText = player2Name;
 });

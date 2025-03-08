@@ -1,5 +1,6 @@
 // Leetcode user API functionality
 //import getUserData from "./../../../Backend/leetcode_user.js";
+import isValid from "../../../Backend/utils/validateUser.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -32,7 +33,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const player2Name = document.getElementById("player2Name").value;
             localStorage.setItem("Player1", player1Name);
             localStorage.setItem("Player2", player2Name);
-            window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+            if (isValid(player1Name) && isValid(player2Name)) {
+                window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+            }
+            else {
+                if (!isValid(player1Name)) {
+                    document.getElementById("player1Name").value = `${player1Name} is not a Leetcode username. YEET!`;
+                }
+                if (!isValid(player2Name)) {
+                    document.getElementById("player2Name").value = `${player2Name} is not a Leetcode username. YEET!`;
+                }
+            }
         });
     }
 
