@@ -29,14 +29,17 @@ async function updateSubmission(player1, player2, problemList) {
         let user = userList[i];
         const currentUserData = await getUserData(user, PARAMS);
         let recentSubmissions = currentUserData.get("recentSubmissions");
-        let mostRecent = recentSubmissions[0];
-        if (mostRecent["statusDisplay"] === "Accepted") {
-            if (problemList.includes(mostRecent["titleSlug"])) {
-                const userIdx = userToHash.get(user);
-                const problemIdx = problemToHash.get(mostRecent["titleSlug"]);
-                correctSubmissions[userIdx][problemIdx] = true;
+        if (recentSubmissions.length > 0) {
+            //edge case: if user has never submitted, this will not work
+            let mostRecent = recentSubmissions[0];
+            if (mostRecent["statusDisplay"] === "Accepted") {
+                if (problemList.includes(mostRecent["titleSlug"])) {
+                    const userIdx = userToHash.get(user);
+                    const problemIdx = problemToHash.get(mostRecent["titleSlug"]);
+                    correctSubmissions[userIdx][problemIdx] = true;
+                }
             }
-        }  
+        }
     }
 
     return correctSubmissions;
