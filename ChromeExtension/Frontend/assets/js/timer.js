@@ -37,21 +37,21 @@ function getNextTime(hours, minutes, seconds) {
     //precondition: hours, minutes, and/or seconds > 0
     if (seconds === 0) {
         if (minutes === 0) {
+            if (hours === 0) {
+                return [0, 0, 0]; // 🔥 prevent negative time
+            }
             --hours;
-            seconds = 59;
             minutes = 59;
-        }
-        else {
+        } else {
             --minutes;
-            seconds = 59;
         }
-    }
-    else {
+        seconds = 59;
+    } else {
         --seconds;
     }
-    let retTime = [hours, minutes, seconds];
-    return retTime;
+    return [hours, minutes, seconds];
 }
+
 
 function timeFormated(hours, minutes, seconds) {
     //0 <= hours <= 5; 0 <= minutes, seconds < 60
