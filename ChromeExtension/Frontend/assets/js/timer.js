@@ -24,25 +24,32 @@ var numSeconds = 0;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
+document.addEventListener("DOMContentLoaded", function () {
+    const player1Name = localStorage.getItem("Player1");
+    const player2Name = localStorage.getItem("Player2");
+    document.getElementById("gamePlayer1").innerText = player1Name;
+    document.getElementById("gamePlayer2").innerText = player2Name;
+});
+
 function getNextTime(hours, minutes, seconds) {
     //precondition: hours, minutes, and/or seconds > 0
     if (seconds === 0) {
         if (minutes === 0) {
+            if (hours === 0) {
+                return [0, 0, 0]; // 🔥 prevent negative time
+            }
             --hours;
-            seconds = 59;
             minutes = 59;
-        }
-        else {
+        } else {
             --minutes;
-            seconds = 59;
         }
-    }
-    else {
+        seconds = 59;
+    } else {
         --seconds;
     }
-    let retTime = [hours, minutes, seconds];
-    return retTime;
+    return [hours, minutes, seconds];
 }
+
 
 function timeFormated(hours, minutes, seconds) {
     //0 <= hours <= 5; 0 <= minutes, seconds < 60
