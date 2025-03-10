@@ -1,5 +1,6 @@
 // Leetcode user API functionality
-// import getUserData from "./../../../Backend/leetcode_user.js";
+//import getUserData from "./../../../Backend/leetcode_user.js";
+import isValid from "../../../Backend/utils/validateUser.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -27,12 +28,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let start_game_button = document.getElementById("start-game-button");
     if (start_game_button) {
-        start_game_button.addEventListener("click", function () {
+        start_game_button.addEventListener("click", async function () {
+            //When the start button gets clicked on, the backend checks whether
+            //the two inputted users are actually valid.
+            //If a player is invalid, then the text box will notify it.
             const player1Name = document.getElementById("player1Name").value;
             const player2Name = document.getElementById("player2Name").value;
             localStorage.setItem("Player1", player1Name);
             localStorage.setItem("Player2", player2Name);
-            window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+            let validPlayer1 = await isValid(player1Name);
+            let validPlayer2 = await isValid(player2Name);
+            if (validPlayer1 && validPlayer2) {
+                window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+            }
+            else {
+                console.log(`Is ${player1Name} an actual Leetcode user? ${isValid}`);
+                if (!validPlayer1) {
+                    document.getElementById("player1Name").value = `${player1Name} is not a Leetcode username. YEET!`;
+                }
+                if (!validPlayer2) {
+                    document.getElementById("player2Name").value = `${player2Name} is not a Leetcode username. YEET!`;
+                }
+            }
         });
     }
 
