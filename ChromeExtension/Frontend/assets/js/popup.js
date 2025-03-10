@@ -12,6 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    let back_to_main_button_from_join = document.getElementById("back-to-main-screen-from-join");
+    if (back_to_main_button_from_join) {
+        back_to_main_button_from_join.addEventListener("click", function () {
+            window.location.href = "main-screen.html"; // Navigate back to main screen
+        });
+    }
+
     let create_team_button = document.getElementById("create-team-button");
     if (create_team_button) {
         create_team_button.addEventListener("click", function () {
