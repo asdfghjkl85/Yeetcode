@@ -112,11 +112,11 @@ input {
 
 
 
-
 /* Add margin-bottom to the first .outer-border */
 .outer-border:first-of-type {
     margin-bottom: 20px; /* Adjust the value as needed */
 }
+
 
 
 
@@ -171,9 +171,17 @@ input {
     overflow-y: auto; /* Enables internal scrolling when content exceeds the height */
 }
 
+#note-text {
+    font-size: 14px; /* Adjust as needed */
+    line-height: 1.6; /* Adds space between lines */
+    padding: 15px; /* Adds padding inside the note content */
+    color: #333; /* Darker text for better contrast */
+}
+
 /* Expanding the note section dynamically (JS sets the height) */
 #toggle-note-checkbox:checked ~ #note-content {
     height: auto;
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Rotate button when the note section expands */

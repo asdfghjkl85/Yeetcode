@@ -35,13 +35,13 @@
 
         <!-- Note Header (Label acts as the toggle button) -->
         <label for="toggle-note-checkbox" id="note-header" class="note-header">
-            <span>Notes</span>
+            <span>💡 Tips</span>
             <span id="toggle-note-button">▼</span>
         </label>
 
         <!-- Note Content -->
         <div id="note-content" class="note-content">
-            <textarea placeholder="Write your notes here..."></textarea>
+            <div id="note-text"></div> <!-- Container for the text -->
         </div>
     </div>
 
@@ -50,6 +50,7 @@
 
 
     <script type="module" src="assets/js/popup.js"></script>
+    <script src="assets/js/notes.js"></script> <!-- Add this script for notes -->
 
 </body>
 
