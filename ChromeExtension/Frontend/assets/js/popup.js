@@ -1,6 +1,6 @@
 // Leetcode user API functionality
 //import getUserData from "./../../../Backend/leetcode_user.js";
-import isValid from "../../../Backend/utils/validateUser.js";
+import validateUser from "./../../../Backend/utils/validateUserGraphQL.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-     const toggleCheckbox = document.getElementById("toggle-note-checkbox");
+    const toggleCheckbox = document.getElementById("toggle-note-checkbox");
     const noteContent = document.getElementById("note-content");
 
     function adjustNoteHeight() {
@@ -77,6 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update height when the window is resized
     window.addEventListener("resize", adjustNoteHeight);
+
+    const player1Input = document.getElementById("player1Name");
+    const player1Name = player1Input.value.trim();
+
+    let validation = validateUser(player1Name);
+
+
 
 
 });
