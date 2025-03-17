@@ -1,6 +1,7 @@
 // Leetcode user API functionality
 //import getUserData from "./../../../Backend/leetcode_user.js";
 import isValid from "../../../Backend/utils/validateUser.js";
+import generateRandomCode from "../../../Backend/utils/code_generator.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -22,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let create_team_button = document.getElementById("create-team-button");
     if (create_team_button) {
         create_team_button.addEventListener("click", function () {
+            const gameCode = generateRandomCode();
+            localStorage.setItem("gameCode", gameCode);
             window.location.href = "create-team-screen.html"; // Navigate to Create Team page
         });
     }
@@ -60,7 +63,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-     const toggleCheckbox = document.getElementById("toggle-note-checkbox");
+    let game_code_text = document.getElementById("inviteCode");
+    if (game_code_text) {
+        const gameCode = localStorage.getItem("gameCode");
+        game_code_text.innerText = gameCode;
+        //then add this game code (with other features like player)
+        //to the list of currently available games
+    }
+
+    const toggleCheckbox = document.getElementById("toggle-note-checkbox");
     const noteContent = document.getElementById("note-content");
 
     function adjustNoteHeight() {
@@ -77,6 +88,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update height when the window is resized
     window.addEventListener("resize", adjustNoteHeight);
-
-
 });
