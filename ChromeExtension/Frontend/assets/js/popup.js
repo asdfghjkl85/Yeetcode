@@ -1,6 +1,6 @@
 // Leetcode user API functionality
 //import getUserData from "./../../../Backend/leetcode_user.js";
-import validateUser from "./../../../Backend/utils/validateUserGraphQL.js";
+import { validateUser } from "./../../../Backend/utils/validateUserGraphQL.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let create_team_button = document.getElementById("create-team-button");
     if (create_team_button) {
-        create_team_button.addEventListener("click", function () {
+        create_team_button.addEventListener("click", async function () {
             window.location.href = "create-team-screen.html"; // Navigate to Create Team page
         });
     }
@@ -34,56 +34,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let start_game_button = document.getElementById("start-game-button");
+    
     if (start_game_button) {
         start_game_button.addEventListener("click", async function () {
             //When the start button gets clicked on, the backend checks whether
             //the two inputted users are actually valid.
             //If a player is invalid, then the text box will notify it.
-            const player1Name = document.getElementById("player1Name").value;
-            const player2Name = document.getElementById("player2Name").value;
-            localStorage.setItem("Player1", player1Name);
-            localStorage.setItem("Player2", player2Name);
-            let validPlayer1 = await isValid(player1Name);
-            let validPlayer2 = await isValid(player2Name);
-            if (validPlayer1 && validPlayer2) {
+            console.log(document.getElementById("player1Name")); 
+            console.log(document.getElementById("player2Name"));
+
+            const player1Input = document.getElementById("player1Name");
+            const player2Input = document.getElementById("player2Name");
+
+            const player1Name = player1Input.value;
+            const player2Name = player2Input.value; 
+
+            let isValid1 = await validateUser(player1Name);
+            let isValid2 = await validateUser(player2Name); 
+
+            if(isValid1 && isValid2) {
+                localStorage.setItem("Player1", player1Name);
+                localStorage.setItem("Player2", player2Name);
+
                 window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+            } else if (isValid1 === true && isValid2 === false) {
+                player1Input.style.border = "2px solid green"; 
+                player2Input.style.border = "2px solid red"; 
+                start_game_button = false;
+            } else if(isValid1 === false && isValid2 === true) {
+                player1Input.style.border = "2px solid red"; 
+                player2Input.style.border = "2px solid green"; 
+                start_game_button = false;
+            } else {
+                player1Input.style.border = "2px solid red"; 
+                player2Input.style.border = "2px solid red"; 
+                start_game_button = false;
             }
-            else {
-                console.log(`Is ${player1Name} an actual Leetcode user? ${isValid}`);
-                if (!validPlayer1) {
-                    document.getElementById("player1Name").value = `${player1Name} is not a Leetcode username. YEET!`;
-                }
-                if (!validPlayer2) {
-                    document.getElementById("player2Name").value = `${player2Name} is not a Leetcode username. YEET!`;
-                }
-            }
+
         });
     }
-
-    const toggleCheckbox = document.getElementById("toggle-note-checkbox");
-    const noteContent = document.getElementById("note-content");
-
-    function adjustNoteHeight() {
-        if (toggleCheckbox.checked) {
-            let availableHeight = window.innerHeight - noteContent.offsetTop - 20; // Calculate available height in the side panel
-            noteContent.style.height = `${availableHeight}px`;
-        } else {
-            noteContent.style.height = "0px";
-        }
-    }
-
-    // Adjust height when checkbox state changes
-    toggleCheckbox.addEventListener("change", adjustNoteHeight);
-
-    // Update height when the window is resized
-    window.addEventListener("resize", adjustNoteHeight);
-
-    const player1Input = document.getElementById("player1Name");
-    const player1Name = player1Input.value.trim();
-
-    let validation = validateUser(player1Name);
-
-
-
 
 });
