@@ -1,5 +1,6 @@
 export async function validateUser(username) {
     username = username.toLowerCase();
+    username = username.trim(); 
     const query = `
       query userPublicProfile($username: String!) {
           matchedUser(username: $username) {
