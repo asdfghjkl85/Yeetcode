@@ -1,6 +1,6 @@
 // Leetcode user API functionality
 //import getUserData from "./../../../Backend/leetcode_user.js";
-import isValid from "../../../Backend/utils/validateUser.js";
+import { validateUser } from "./../../../Backend/utils/validateUserGraphQL.js";
 import generateRandomCode from "../../../Backend/utils/code_generator.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+
     let join_team_button = document.getElementById("join-team-button");
     if (join_team_button) {
         join_team_button.addEventListener("click", function () {
@@ -37,29 +38,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let start_game_button = document.getElementById("start-game-button");
+    
     if (start_game_button) {
         start_game_button.addEventListener("click", async function () {
             //When the start button gets clicked on, the backend checks whether
             //the two inputted users are actually valid.
             //If a player is invalid, then the text box will notify it.
-            const player1Name = document.getElementById("player1Name").value;
-            const player2Name = document.getElementById("player2Name").value;
-            localStorage.setItem("Player1", player1Name);
-            localStorage.setItem("Player2", player2Name);
-            let validPlayer1 = await isValid(player1Name);
-            let validPlayer2 = await isValid(player2Name);
-            if (validPlayer1 && validPlayer2) {
+            const player1Input = document.getElementById("player1Name");
+            const player2Input = document.getElementById("player2Name");
+
+            const player1Name = player1Input.value;
+            const player2Name = player2Input.value; 
+
+            let isValid1 = await validateUser(player1Name);
+            let isValid2 =  await validateUser(player2Name); 
+
+            if(isValid1 && isValid2) {
+                localStorage.setItem("Player1", player1Name);
+                localStorage.setItem("Player2", player2Name);
+
                 window.location.href = "game-play-screen.html"; // Navigate to Join Team page
-            }
+            } 
+            
+            else if (isValid1 === true && isValid2 === false) {
+                player1Input.style.border = "2px solid green"; 
+                player2Input.style.border = "2px solid red"; 
+                start_game_button = false;
+            } 
+
+            else if(isValid1 === false && isValid2 === true) {
+                player1Input.style.border = "2px solid red"; 
+                player2Input.style.border = "2px solid green"; 
+                start_game_button = false;
+            } 
+
             else {
-                console.log(`Is ${player1Name} an actual Leetcode user? ${isValid}`);
-                if (!validPlayer1) {
-                    document.getElementById("player1Name").value = `${player1Name} is not a Leetcode username. YEET!`;
-                }
-                if (!validPlayer2) {
-                    document.getElementById("player2Name").value = `${player2Name} is not a Leetcode username. YEET!`;
-                }
+                player1Input.style.border = "2px solid red"; 
+                player2Input.style.border = "2px solid red"; 
+                start_game_button = false;
             }
+
         });
     }
 
@@ -71,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
         //to the list of currently available games
     }
 
-    const toggleCheckbox = document.getElementById("toggle-note-checkbox");
+     const toggleCheckbox = document.getElementById("toggle-note-checkbox");
     const noteContent = document.getElementById("note-content");
 
     function adjustNoteHeight() {
@@ -88,4 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update height when the window is resized
     window.addEventListener("resize", adjustNoteHeight);
+
+
 });
