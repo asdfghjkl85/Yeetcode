@@ -6,6 +6,7 @@ import invitationRoutes from './routes/invitationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { fetchRecentSubmissions } from './utils/leetcodeGraphQLQueries.js';
 import { validateUser } from './utils/leetcodeGraphQLQueries.js';
+import { deleteAllUsers } from './controllers/userController.js';
 
 const app = express();
 app.get("/", (_, res) => res.json({ message: "Welcome to Yeetcode API" }));
@@ -18,7 +19,6 @@ app.use(bodyParser.json());
 
 // Connect to MongoDB
 connectDB();
-
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/games', gameRoutes);
@@ -32,7 +32,7 @@ app.use('/api/invitationCodes', invitationRoutes);
  * @return A dictionary of submisisons arrays.
  *  
  * submissionDict[index] has three fields: title, timestamp, and stauts.
- * submissionDict starts at index 0, submissionDict[0].title will get the title for the first (most recent) submission.
+ * submissionDict starts at index 0, submissionDict[0].title will get the title for the user's (most recent) submission.
  *
  */
 app.post('/api/userRecentSubmissions', async (req, res) => {
@@ -74,6 +74,7 @@ app.post('/api/validateUser', async (req, res) => {
   }
 
 });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

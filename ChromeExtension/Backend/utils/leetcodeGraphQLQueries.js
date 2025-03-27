@@ -30,6 +30,8 @@ export const fetchRecentSubmissions = async (username, limit) => {
                     status: submission.statusDisplay,
                 };
             });
+
+            return submissionDict;
         } else {
             throw new Error("Submission details not found or error retrieving data");
         }
@@ -38,6 +40,8 @@ export const fetchRecentSubmissions = async (username, limit) => {
         throw new Error("Internal server error");
     }
 };
+
+
 
 export const validateUser = async (username) =>{ 
     username = username.toLowerCase();
