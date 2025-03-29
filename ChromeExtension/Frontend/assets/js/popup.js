@@ -71,20 +71,25 @@ document.addEventListener("DOMContentLoaded", function () {
         //to the list of currently available games
     }
 
+    // Note panel functionality
     const toggleCheckbox = document.getElementById("toggle-note-checkbox");
     const noteContent = document.getElementById("note-content");
 
     function adjustNoteHeight() {
-        if (toggleCheckbox.checked) {
-            let availableHeight = window.innerHeight - noteContent.offsetTop - 20; // Calculate available height in the side panel
-            noteContent.style.height = `${availableHeight}px`;
-        } else {
-            noteContent.style.height = "0px";
+        if (toggleCheckbox && noteContent) {
+            if (toggleCheckbox.checked) {
+                let availableHeight = window.innerHeight - noteContent.offsetTop - 20;
+                noteContent.style.height = `${availableHeight}px`;
+            } else {
+                noteContent.style.height = "0px";
+            }
         }
     }
 
     // Adjust height when checkbox state changes
-    toggleCheckbox.addEventListener("change", adjustNoteHeight);
+    if (toggleCheckbox) {
+        toggleCheckbox.addEventListener("change", adjustNoteHeight);
+    }
 
     // Update height when the window is resized
     window.addEventListener("resize", adjustNoteHeight);
