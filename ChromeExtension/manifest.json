@@ -3,7 +3,7 @@
   "name": "Hello Yeetcode",
   "version": "1.0",
   "description": "Yeetcode extension for cs geeks",
-  "permissions": ["storage", "tabs", "sidePanel", "windows", "webNavigation"],
+  "permissions": ["storage", "tabs", "sidePanel", "windows", "webNavigation", "notifications"],
   "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "Frontend/main-screen.html"
@@ -31,5 +31,4 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'"
   }
-
 }

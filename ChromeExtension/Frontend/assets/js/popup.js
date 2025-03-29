@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let validPlayer1 = await isValid(player1Name);
             let validPlayer2 = await isValid(player2Name);
             if (validPlayer1 && validPlayer2) {
-                window.location.href = "game-play-screen.html"; // Navigate to Join Team page
+                window.location.href = "game-setup-screen.html"; // Navigate to game setup screen
             }
             else {
                 console.log(`Is ${player1Name} an actual Leetcode user? ${isValid}`);
