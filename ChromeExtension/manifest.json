@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Hello Yeetcode",
+  "name": "Yeetcode",
   "version": "1.0",
   "description": "Yeetcode extension for cs geeks",
   "permissions": ["storage", "tabs", "sidePanel", "windows", "webNavigation", "notifications"],
