@@ -17,6 +17,25 @@ function countCompletedProblems(playerIndex) {
     return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
 }
 
+// Function to update the UI with submission status
+function updateSubmissionUI(submissions) {
+    console.log("Updating UI with submissions:", submissions);
+    submissions.forEach((playerSubmissions, playerIndex) => {
+        playerSubmissions.forEach((isCorrect, problemIndex) => {
+            const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
+            const box = document.getElementById(boxId);
+            if (box) {
+                // Only update if the problem is newly solved (wasn't solved before)
+                if (isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
+                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
+                } else if (!isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
+                    box.textContent = '🟡';
+                }
+            }
+        });
+    });
+}
+
 // Function to determine winner and handle game over
 function handleGameOver() {
     const player1Completed = countCompletedProblems(0);
@@ -98,24 +117,17 @@ var intervalTimer = setInterval(async function() {
             window.PROBLEM_LIST
         );
         
+        // Update the UI with new submission status
+        updateSubmissionUI(updatedPlayerSubmissions);
+        
+        // Update the current submissions array
+        window.currentCorrectSubmissions = updatedPlayerSubmissions;
+        
+        // Check if any player has completed all problems
         for (var i = 0; i < NUM_USERS; i++) {
-            for (var j = 0; j < window.NUM_PROBLEMS; j++) {
-                if (window.currentCorrectSubmissions[i][j] === false && 
-                    updatedPlayerSubmissions[i][j] === true) {
-                    // Update the UI to show completion
-                    const boxElement = `player${i+1}Box${j+1}`;
-                    const element = document.getElementById(boxElement);
-                    if (element) {
-                        element.innerText = "✔️";
-                        window.currentCorrectSubmissions[i][j] = true;
-                        
-                        // Check if all problems are completed
-                        if (window.currentCorrectSubmissions[i].every(Boolean)) {
-                            handleGameOver();
-                            return;
-                        }
-                    }
-                }
+            if (window.currentCorrectSubmissions[i].every(Boolean)) {
+                handleGameOver();
+                return;
             }
         }
     }

@@ -94,8 +94,30 @@ async function initializeGameTable() {
     console.log("Game start time set to:", new Date(window.GAME_START_TIME).toISOString());
 }
 
+// Update UI with submission status
+function updateSubmissionUI(submissions) {
+    console.log("Updating UI with submissions:", submissions);
+    submissions.forEach((playerSubmissions, playerIndex) => {
+        playerSubmissions.forEach((isCorrect, problemIndex) => {
+            const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
+            const box = document.getElementById(boxId);
+            if (box) {
+                box.textContent = isCorrect ? '🟢' : '🟡';
+            }
+        });
+    });
+}
+
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log(`Starting game with ${selectedProblemCount} problems`);
     initializeGameTable();
+    
+    // Listen for submission updates from background script
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'submissionUpdate') {
+            console.log("Received submission update:", message.submissions);
+            updateSubmissionUI(message.submissions);
+        }
+    });
 }); 

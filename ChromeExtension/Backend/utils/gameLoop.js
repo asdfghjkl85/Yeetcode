@@ -3,6 +3,13 @@ import getUserData from "./leetcodeUser.js";
 const NUM_USERS = 2;
 const PARAMS = ["recentSubmissions"];
 
+// Convert title to slug format
+function titleToSlug(title) {
+    return title.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+}
+
 async function updateSubmission(player1, player2, problemList) {
     /*
     Input: players 1 and 2 (names)
@@ -40,32 +47,34 @@ async function updateSubmission(player1, player2, problemList) {
         let user = userList[i];
         try {
             const currentUserData = await getUserData(user, PARAMS);
-            let recentSubmissions = currentUserData.get("recentSubmissions");
+            console.log(`Raw API response for ${user}:`, currentUserData);
             
+            let recentSubmissions = currentUserData.get("recentSubmissions");
             console.log(`Recent submissions for ${user}:`, recentSubmissions);
             
             if (recentSubmissions && recentSubmissions.length > 0) {
                 // Only check submissions made after game start time
                 recentSubmissions.forEach(submission => {
                     console.log(`Checking submission:`, submission);
+                    console.log(`Submission title: ${submission.title}`);
+                    console.log(`Submission status: ${submission.statusDisplay}`);
                     
-                    // Check if the submission is for one of our problems
-                    const problemSlug = submission.titleSlug || submission["titleSlug"];
-                    if (!problemSlug) {
-                        console.log("Submission missing titleSlug:", submission);
-                        return;
-                    }
-
+                    // Convert submission title to slug format for comparison
+                    const submissionSlug = titleToSlug(submission.title);
+                    console.log(`Converted submission title to slug: ${submissionSlug}`);
+                    console.log(`Is this slug in our problem list? ${problemList.includes(submissionSlug)}`);
+                    
                     // Convert Unix timestamp (seconds) to milliseconds
                     const submissionTime = parseInt(submission.timestamp) * 1000;
                     console.log(`Submission time: ${new Date(submissionTime).toISOString()}`);
+                    console.log(`Is submission after game start? ${submissionTime >= gameStartTime}`);
                     
                     if (submissionTime >= gameStartTime && 
                         submission.statusDisplay === "Accepted" && 
-                        problemList.includes(problemSlug)) {
-                        console.log(`Found valid submission for ${user} on problem ${problemSlug}`);
+                        problemList.includes(submissionSlug)) {
+                        console.log(`Found valid submission for ${user} on problem ${submissionSlug}`);
                         const userIdx = userToHash.get(user);
-                        const problemIdx = problemToHash.get(problemSlug);
+                        const problemIdx = problemToHash.get(submissionSlug);
                         correctSubmissions[userIdx][problemIdx] = true;
                     }
                 });
