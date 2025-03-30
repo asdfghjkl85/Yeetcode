@@ -34,39 +34,3 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     await logAIAccess(url.toString(), new Date().toISOString());
   }
 });
-
-// Listen for messages from content scripts
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'START_GAME') {
-        gameState = {
-            ...gameState,
-            isGameActive: true,
-            startTime: new Date().toISOString(),
-            player1: message.player1,
-            player2: message.player2,
-            problems: message.problems,
-            currentCorrectSubmissions: [new Array(message.problems.length).fill(false), new Array(message.problems.length).fill(false)]
-        };
-        console.log('Game started:', gameState);
-        sendResponse({ success: true });
-    } else if (message.type === 'END_GAME') {
-        gameState = {
-            ...gameState,
-            isGameActive: false,
-            endTime: new Date().toISOString()
-        };
-        console.log('Game ended:', gameState);
-        sendResponse({ success: true });
-    } else if (message.type === 'UPDATE_SUBMISSIONS') {
-        if (gameState.isGameActive) {
-            gameState.currentCorrectSubmissions = message.submissions;
-            console.log('Submissions updated:', gameState.currentCorrectSubmissions);
-            sendResponse({ success: true });
-        } else {
-            sendResponse({ success: false, error: 'Game not active' });
-        }
-    } else if (message.type === 'GET_GAME_STATE') {
-        sendResponse({ gameState });
-    }
-    return true; // Keep the message channel open for async responses
-});
