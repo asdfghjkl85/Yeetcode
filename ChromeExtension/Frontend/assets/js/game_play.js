@@ -89,8 +89,9 @@ async function initializeGameTable() {
     // Update number of problems for timer.js
     window.NUM_PROBLEMS = selectedProblemCount;
 
-    // Store game start time
+    // Store game start time in milliseconds
     window.GAME_START_TIME = Date.now();
+    console.log("Game start time set to:", new Date(window.GAME_START_TIME).toISOString());
 }
 
 // Initialize game when page loads
