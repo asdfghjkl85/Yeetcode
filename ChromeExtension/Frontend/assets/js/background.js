@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() =>  {
-    chrome.sidePanel.setOptions({ path: "Frontend/main-screen.html" })
+    chrome.sidePanel.setOptions({ path: "Frontend/login-page-screen.html" })
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true});
 });
 
