@@ -5,7 +5,6 @@ const CYCLE_AMOUNT = 15; //Number of seconds per API Call
 const NUM_USERS = 2;
 
 // Initialize time from localStorage or default to 10 minutes
-var numHours = 0;
 var numMinutes = parseInt(localStorage.getItem("gameTime")) || 10;
 var numSeconds = 0;
 
@@ -33,6 +32,13 @@ function updateSubmissionUI(submissions) {
                 }
             }
         });
+
+        // Update the score display for each player
+        const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
+        if (scoreElement) {
+            const totalSolved = playerSubmissions.filter(Boolean).length;
+            scoreElement.textContent = totalSolved;
+        }
     });
 }
 
@@ -69,33 +75,26 @@ function handleGameOver() {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Initialize timer display with selected time
-    document.getElementById("timerText").innerText = timeFormated(numHours, numMinutes, numSeconds);
+    document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
 });
 
-function getNextTime(hours, minutes, seconds) {
-    //precondition: hours, minutes, and/or seconds > 0
+function getNextTime(minutes, seconds) {
+    //precondition: minutes and/or seconds > 0
     if (seconds === 0) {
         if (minutes === 0) {
-            if (hours === 0) {
-                return [0, 0, 0]; // 🔥 prevent negative time
-            }
-            --hours;
-            minutes = 59;
-        } else {
-            --minutes;
+            return [0, 0]; // prevent negative time
         }
+        --minutes;
         seconds = 59;
     } else {
         --seconds;
     }
-    return [hours, minutes, seconds];
+    return [minutes, seconds];
 }
 
-function timeFormated(hours, minutes, seconds) {
-    //0 <= hours <= 5; 0 <= minutes, seconds < 60
+function timeFormated(minutes, seconds) {
+    //0 <= minutes, seconds < 60
     var timeOutput = ``;
-    if (hours < 10) {timeOutput += `0`;}
-    timeOutput += `${hours}:`;
     if (minutes < 10) {timeOutput += `0`;}
     timeOutput += `${minutes}:`;
     if (seconds < 10) {timeOutput += `0`;}
@@ -104,10 +103,9 @@ function timeFormated(hours, minutes, seconds) {
 }
 
 var intervalTimer = setInterval(async function() {
-    const nextTime = getNextTime(numHours, numMinutes, numSeconds);
-    numHours = nextTime[0];
-    numMinutes = nextTime[1];
-    numSeconds = nextTime[2];
+    const nextTime = getNextTime(numMinutes, numSeconds);
+    numMinutes = nextTime[0];
+    numSeconds = nextTime[1];
     
     if (numSeconds % CYCLE_AMOUNT === 0 && CHECKING_IF_PASSED && window.PROBLEM_LIST) {
         // Check if submission has changed
@@ -132,12 +130,12 @@ var intervalTimer = setInterval(async function() {
         }
     }
     
-    if (numHours === 0 && numMinutes === 0 && numSeconds === 0) {
+    if (numMinutes === 0 && numSeconds === 0) {
         // Time's up - determine winner
         handleGameOver();
     } else {
         //update timer display
-        document.getElementById("timerText").innerText = timeFormated(numHours, numMinutes, numSeconds);
+        document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
     }
 }, 1000);
 

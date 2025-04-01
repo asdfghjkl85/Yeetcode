@@ -105,6 +105,14 @@ function updateSubmissionUI(submissions) {
                 box.textContent = isCorrect ? '🟢' : '🟡';
             }
         });
+        
+        // Update the score display for each player
+        const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
+        if (scoreElement) {
+            const totalSolved = playerSubmissions.filter(Boolean).length;
+            console.log(`Player ${playerIndex + 1} solved ${totalSolved} problems`);
+            scoreElement.textContent = totalSolved;
+        }
     });
 }
 
