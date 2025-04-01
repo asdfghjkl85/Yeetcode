@@ -53,8 +53,8 @@ td.player1:hover, td.player2:hover {
 
 /* Bottom Section (Timer & Scores) */
 .bottom-section {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
     margin-top: 15px;
     padding: 10px;
@@ -76,32 +76,36 @@ td.player1:hover, td.player2:hover {
 
 /* Scores Container */
 .scores-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
 /* Player Score */
 .player-score {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
     background: white;
-    padding: 10px 20px;
-    border-radius: 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 40px;
+    grid-column: span 1;
 }
 
-.player-name {
-    font-size: 14px;
-    color: #64748b;
-    margin-bottom: 5px;
+.player-score:first-child {
+    grid-column: 2;
+}
+
+.player-score:last-child {
+    grid-column: 3;
 }
 
 /* Score Boxes */
 .score {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     color: #1e293b;
-    min-width: 40px;
     text-align: center;
 }
