@@ -41,6 +41,10 @@ input:focus {
     color: rgb(0, 0, 0);
 }
 
+a {
+    color: black;
+}
+
 
 .center-container {
     display: flex;
@@ -75,6 +79,12 @@ input:focus {
 
 .side-by-side {
     display: flex;
+    margin-right: 10px;
+}
+
+.list-class {
+    font-size: medium;
+    line-height: 25px;
 }
 
 #middle-box {
