@@ -221,36 +221,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 localStorage.setItem("Player1", player1Name);
                 localStorage.setItem("Player2", player2Name);
 
-                // Validate players asynchronously
-                let [validPlayer1, validPlayer2] = await Promise.all([true, true]);
-
-                if (validPlayer1 && validPlayer2) {
-                    // Update game status on the backend
-                    await fetch(`http://localhost:3000/api/games/${gameId}/status`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ status: "in_progress", player_1: player1Name })
-                    });
-
-                    // Notify other players via WebSocket
-                    socket.send(JSON.stringify({ type: "START_GAME", gameId }));
-
-                    // Navigate to the gameplay screen
-                    window.location.href = "game-play-screen.html";
-                } else {
-                    // Handle invalid players
-                    console.log(`Is ${player1Name} a valid Leetcode user? ${validPlayer1}`);
-                    console.log(`Is ${player2Name} a valid Leetcode user? ${validPlayer2}`);
-
-                    if (!validPlayer1) {
-                        player1Input.value = `${player1Name} is not a Leetcode username. YEET!`;
+                // Store game state before navigation
+                chrome.storage.local.set({
+                    gameState: {
+                        gameId: gameId,
+                        player1: player1Name,
+                        player2: player2Name,
+                        status: "setup"
                     }
-                    if (!validPlayer2) {
-                        player2Input.value = `${player2Name} is not a Leetcode username. YEET!`;
-                    }
-                }
+                });
+
+                // Navigate to setup screen instead of directly to game
+                window.location.href = "game-setup-screen.html";
             } catch (err) {
-                console.error("Failed to start game:", err);
+                console.error("Failed to proceed to game setup:", err);
             }
         });
     }
@@ -267,16 +251,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const noteContent = document.getElementById("note-content");
 
     function adjustNoteHeight() {
-        if (toggleCheckbox.checked) {
-            let availableHeight = window.innerHeight - noteContent.offsetTop - 20; // Calculate available height in the side panel
-            noteContent.style.height = `${availableHeight}px`;
-        } else {
-            noteContent.style.height = "0px";
+        if (toggleCheckbox && noteContent) {
+            if (toggleCheckbox.checked) {
+                let availableHeight = window.innerHeight - noteContent.offsetTop - 20;
+                noteContent.style.height = `${availableHeight}px`;
+            } else {
+                noteContent.style.height = "0px";
+            }
         }
     }
 
     // Adjust height when checkbox state changes
-    toggleCheckbox.addEventListener("change", adjustNoteHeight);
+    if (toggleCheckbox) {
+        toggleCheckbox.addEventListener("change", adjustNoteHeight);
+    }
 
     // Update height when the window is resized
     window.addEventListener("resize", adjustNoteHeight);
