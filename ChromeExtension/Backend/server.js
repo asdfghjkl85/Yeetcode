@@ -63,7 +63,7 @@ app.use('/api/games', gameRoutes);
  * 
  * @return A dictionary of submisisons arrays.
  *  
- * submissionDict[index] has three fields: title, timestamp, and stauts.
+ * submissionDict[index] has three fields: title, timestamp, and status.
  * submissionDict starts at index 0, submissionDict[0].title will get the title for the user's (most recent) submission.
  *
  */
@@ -107,7 +107,7 @@ app.post('/api/validateUser', async (req, res) => {
 
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 2000;
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
