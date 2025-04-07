@@ -1,6 +1,6 @@
 import generateRandomCode from "./code_generator.js";
 
-const socket = new WebSocket("ws://localhost:3000/ws");
+const socket = new WebSocket("ws://localhost:2000/ws");
 
 document.addEventListener("DOMContentLoaded", function () {
     // UI Elements
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }            
             const pollInterval = setInterval(() => {
-                fetch(`http://localhost:3000/api/games/${gameId}`)
+                fetch(`http://localhost:2000/api/games/${gameId}`)
                     .then(response => response.json())
                     .then(game => {
                         console.log("Game Status:", game.status);
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!gameId) {
                 // Create game on backend
-                fetch("http://localhost:3000/api/games", {
+                fetch("http://localhost:2000/api/games", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ invitation_code: code, username: null })
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const codeInput = document.getElementById("teamCodeInput").value.trim();
             const player2Name = document.getElementById("player2Name").value.trim();
 
-            fetch("http://localhost:3000/api/games/join", {
+            fetch("http://localhost:2000/api/games/join", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ invitation_code: codeInput, username: player2Name })
