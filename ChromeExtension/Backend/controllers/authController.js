@@ -1,6 +1,7 @@
 
 import User from '../models/userModel.js';
 import { hashPassword, comparePassword } from '../utils/hash-password.js';
+import { validateUser } from '../utils/leetcodeGraphQLQueries.js';
 import jwt from 'jsonwebtoken';   
 const { sign } = jwt
 
@@ -8,6 +9,11 @@ const { sign } = jwt
 const signup = async (req, res) => {
     const { yeetcode_username, yeetcode_password, leetcode_username} = req.body;
     
+    const leetUserExists = await validateUser(leetcode_username);
+    if (!leetUserExists) {
+      return res.status(400).json({success: false, message: "Leetcode user does not exist" });
+    }
+
     const userExist = await User.findOne({ yeetcode_username });
     if(userExist) return res.status(400).json({success: false, message: "User already exist" });
     
