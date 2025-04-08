@@ -20,15 +20,15 @@ const signup = async (req, res) => {
     }
   };
   
-  export const signin = async (req, res) => {
-      const { email, password } = req.body;
-      const user = await User.findOne({ email });
+const signin = async (req, res) => {
+      const { yeetcode_username, yeetcode_password } = req.body;
+      const user = await User.findOne({ yeetcode_username });
       if(!user) return res.status(401).json({success: false, message: "Invalid Credentials" });
   
-      const isMatch = await comparePassword(password, user.password);
+      const isMatch = await comparePassword(yeetcode_password, user.yeetcode_password);
       if(!isMatch) return res.status(401).json({success: false, message: "Invalid Credentials" });
   
-      const token = sign({ _id: user._id, email, name: user.name }, process.env.JWT_KEY, { expiresIn: '1h' });
+      const token = sign({ _id: user.yeetcode_username, name: user.leetcode_username }, process.env.JWT_KEY, { expiresIn: '1h' });
       return res.status(200).json({success: true, data: { token } });
   
   }
@@ -37,4 +37,4 @@ const signup = async (req, res) => {
       return res.status(200).json({success: true, data: req.user});
   }
 
-export { signup };
+export { signup, signin };
