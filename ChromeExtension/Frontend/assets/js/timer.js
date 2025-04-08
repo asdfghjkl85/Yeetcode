@@ -138,4 +138,3 @@ var intervalTimer = setInterval(async function() {
         document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
     }
 }, 1000);
-
