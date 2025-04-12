@@ -1,4 +1,5 @@
 import updateSubmission from "../../../Backend/utils/gameLoop.js";
+import { userRecentSubmissions } from "../api/graphql_apis.js";
 
 const CHECKING_IF_PASSED = true; //Can change this to true if want to check a submission passed
 const CYCLE_AMOUNT = 15; //Number of seconds per API Call
@@ -102,33 +103,84 @@ function timeFormated(minutes, seconds) {
     return timeOutput;
 }
 
+function titleToSlug(title) {
+    return title.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+}
+
 var intervalTimer = setInterval(async function() {
     const nextTime = getNextTime(numMinutes, numSeconds);
     numMinutes = nextTime[0];
     numSeconds = nextTime[1];
-    
-    if (numSeconds % CYCLE_AMOUNT === 0 && CHECKING_IF_PASSED && window.PROBLEM_LIST) {
-        // Check if submission has changed
-        const updatedPlayerSubmissions = await updateSubmission(
-            window.PLAYER1, 
-            window.PLAYER2, 
-            window.PROBLEM_LIST
-        );
-        
-        // Update the UI with new submission status
-        updateSubmissionUI(updatedPlayerSubmissions);
-        
-        // Update the current submissions array
-        window.currentCorrectSubmissions = updatedPlayerSubmissions;
-        
-        // Check if any player has completed all problems
-        for (var i = 0; i < NUM_USERS; i++) {
-            if (window.currentCorrectSubmissions[i].every(Boolean)) {
-                handleGameOver();
-                return;
+
+    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+        if (message.action === "triggerUserSubmissionAPICall") {
+            console.log("Clicked on submit button");
+            //I don't want to run these few lines more than once!
+            //so maybe make window.PROBLEM_TO_HASH and window.USER_TO_HASH a thing
+            const problemList = window.PROBLEM_LIST;
+            const NUM_PROBLEMS = problemList.length;
+            let userList = [window.PLAYER1, window.PLAYER2];
+            let userToHash = new Map();  //assign each user a number
+            let problemToHash = new Map();  //assign each problem a number 
+            for (var i = 0; i < NUM_USERS; i++) {
+                userToHash.set(userList[i], i);
+            }
+            for (var i = 0; i < NUM_PROBLEMS; i++) {
+                problemToHash.set(problemList[i], i);
+            }
+
+            // Check if submission has changed
+            for (const PLAYER of userList) {
+                const recentSubmissions = await userRecentSubmissions(PLAYER, 1);
+                const title = titleToSlug(recentSubmissions[0].title);
+                const timestamp = recentSubmissions[0].timestamp;
+                const status = recentSubmissions[0].status;
+                
+                const playerIdx = userToHash.get(PLAYER);
+                let titleIdx = null;
+                if (problemToHash.has(title)) {
+                    titleIdx = problemToHash.get(title);
+                }
+                else {
+                    //edge case: current player solved a problem not on the sheet
+                    continue;
+                }
+
+                const boxId = `player${playerIdx + 1}Box${titleIdx + 1}`;
+                const box = document.getElementById(boxId);
+                if (box) {
+                    if (status == "Accepted") {
+                        box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
+                    }
+                    else {
+                        box.innerHTML = '<img src="assets/images/xmark.png" alt="x" style="width: 30px; height: 30px;">';
+                    }
+                }
+            }
+
+            // const updatedPlayerSubmissions = await updateSubmission(
+            //     window.PLAYER1, 
+            //     window.PLAYER2, 
+            //     window.PROBLEM_LIST
+            // );
+            
+            // Update the UI with new submission status
+            //updateSubmissionUI(updatedPlayerSubmissions);
+            
+            // Update the current submissions array
+            //window.currentCorrectSubmissions = updatedPlayerSubmissions;
+            
+            // Check if any player has completed all problems
+            for (var i = 0; i < NUM_USERS; i++) {
+                if (window.currentCorrectSubmissions[i].every(Boolean)) {
+                    handleGameOver();
+                    return;
+                }
             }
         }
-    }
+    });
     
     if (numMinutes === 0 && numSeconds === 0) {
         // Time's up - determine winner
