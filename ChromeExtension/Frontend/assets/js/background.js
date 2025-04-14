@@ -41,6 +41,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     }
 })
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if(request.action === "leetcodesubmitclicked") {
+        setTimeout(() => {
+            chrome.runtime.sendMessage({action: "triggerUserSubmissionAPICall"});
+        }, 5000);
+    }
+})
+
 //     console.log("THIS IS THE TAB URL: " + tab.url)
 //     if (tab.url && tab.url.includes("https://chatgpt.com/")) {
 //         chrome.tabs.remove(tabId); 
