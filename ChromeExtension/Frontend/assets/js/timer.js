@@ -152,26 +152,16 @@ var intervalTimer = setInterval(async function() {
                 const box = document.getElementById(boxId);
                 if (box) {
                     if (status == "Accepted") {
+                        currentCorrectSubmissions[playerIdx][titleIdx] = true;
                         box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
                     }
                     else {
                         box.innerHTML = '<img src="assets/images/xmark.png" alt="x" style="width: 30px; height: 30px;">';
                     }
+                    console.log(currentCorrectSubmissions);
                 }
             }
 
-            // const updatedPlayerSubmissions = await updateSubmission(
-            //     window.PLAYER1, 
-            //     window.PLAYER2, 
-            //     window.PROBLEM_LIST
-            // );
-            
-            // Update the UI with new submission status
-            //updateSubmissionUI(updatedPlayerSubmissions);
-            
-            // Update the current submissions array
-            //window.currentCorrectSubmissions = updatedPlayerSubmissions;
-            
             // Check if any player has completed all problems
             for (var i = 0; i < NUM_USERS; i++) {
                 if (window.currentCorrectSubmissions[i].every(Boolean)) {
