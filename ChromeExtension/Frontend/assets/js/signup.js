@@ -3,6 +3,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const yeetcodeUsernameInput = document.querySelector("input[placeholder='Enter New Yeetcode Username']");
     const yeetcodePasswordInput = document.querySelector("input[placeholder='Enter New Yeetcode Password']");
     const leetcodeUsernameInput = document.querySelector("input[placeholder='Enter Leetcode Username']");
+    let back_to_login_button_from_signup = document.getElementById("back-to-login-screen-from-signup");
+
+    if (back_to_login_button_from_signup) {
+        back_to_login_button_from_signup.addEventListener("click", function () {
+            window.location.href = "login-page-screen.html"; 
+        });
+    }
 
     signupButton.addEventListener("click", async function() {
         const yeetcode_username = yeetcodeUsernameInput.value.trim();

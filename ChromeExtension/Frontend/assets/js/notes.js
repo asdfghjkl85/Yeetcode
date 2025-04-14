@@ -1,7 +1,7 @@
 // Function to load a random LeetCode tip from the JSON file
 function loadNoteText() {
     // Fetch the JSON file
-    fetch('assets/tips/notes.json')
+    fetch('assets/data/notes.json')
         .then(response => response.json())
         .then(data => {
             // Get the array of LeetCode tips

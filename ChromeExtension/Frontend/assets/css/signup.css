@@ -32,6 +32,27 @@ button:hover {
     transform: scale(1.05); /* Slightly increase the size */
 }
 
+.back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: auto;
+    height: auto;
+    color: black;
+}
+
+.back-btn:hover {
+    background: none;
+    box-shadow: none;
+    transform: none;
+}
+
 input::placeholder {
     color: gray;
     opacity: 0.7;
