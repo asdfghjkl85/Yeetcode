@@ -95,6 +95,7 @@ var intervalTimer = setInterval(async function() {
             const problemList = window.PROBLEM_LIST;
             const NUM_PROBLEMS = problemList.length;
             let userList = [localStorage.getItem('Player1'), localStorage.getItem('Player2')];
+            console.log("Checking submissions for users:", userList);
             let userToHash = new Map();  //assign each user a number
             let problemToHash = new Map();  //assign each problem a number 
             
