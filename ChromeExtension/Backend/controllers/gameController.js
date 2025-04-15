@@ -101,29 +101,18 @@ export const updateGame = async (req, res) => {
 // Update game status
 export const updateGameStatus = async (req, res) => {
   try {
-    const { status, settings } = req.body; // Expect new status and settings in body
+    const { status } = req.body; // Expect new status in body
     const game = await Game.findById(req.params.id);
 
     if (!game) {
       return res.status(404).json({ message: 'Game not found' });
     }
 
-    // Update the game status
-    game.status = status;
-    
-    // Update game settings if provided
-    if (settings) {
-      game.settings = {
-        ...game.settings,
-        ...settings
-      };
-    }
-
+    game.status = status; // Update the game status
     await game.save();
     res.status(200).json(game);
   } catch (error) {
-    console.error('Error updating game status and settings:', error);
-    res.status(500).json({ message: 'Error updating game status and settings' });
+    res.status(500).json({ message: 'Error updating game status' });
   }
 };
 
