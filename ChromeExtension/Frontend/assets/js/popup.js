@@ -50,20 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Game ID is missing.");
                 return;
             }            
-            const pollInterval = setInterval(() => {
-                console.log("Game id is: ", gameId);
-                fetch(`http://localhost:3000/api/games/${gameId}`)
-                    .then(response => response.json())
-                    .then(game => {
-                        console.log("Game Status:", game.status);
-                        if (game.status === "in_progress") {
-                            clearInterval(pollInterval);
-                            console.log("Game started! Redirecting Player 2...");
-                            window.location.href = "game-play-screen.html";
-                        }
-                    })
-                    .catch(err => console.error("Error polling game status:", err));
-            }, 1500);
         }
     });
 
@@ -143,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
         confirmJoinButton.addEventListener("click", () => {
             const codeInput = document.getElementById("teamCodeInput").value.trim();
             const player2Name = document.getElementById("player2Name").value.trim();
-
+   
             fetch("http://localhost:3000/api/games/join", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

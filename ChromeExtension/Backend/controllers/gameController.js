@@ -101,18 +101,29 @@ export const updateGame = async (req, res) => {
 // Update game status
 export const updateGameStatus = async (req, res) => {
   try {
-    const { status } = req.body; // Expect new status in body
+    const { status, settings } = req.body; // Expect new status and settings in body
     const game = await Game.findById(req.params.id);
 
     if (!game) {
       return res.status(404).json({ message: 'Game not found' });
     }
 
-    game.status = status; // Update the game status
+    // Update the game status
+    game.status = status;
+    
+    // Update game settings if provided
+    if (settings) {
+      game.settings = {
+        ...game.settings,
+        ...settings
+      };
+    }
+
     await game.save();
     res.status(200).json(game);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating game status' });
+    console.error('Error updating game status and settings:', error);
+    res.status(500).json({ message: 'Error updating game status and settings' });
   }
 };
 
@@ -159,4 +170,20 @@ export const deleteAllGames = async (req, res) => {
     console.error("Error deleting games:", error);
     res.status(500).json({ message: "Failed to delete games", error: error.message });
   }
+};
+
+export const getGameById = async (req, res) => {
+    try {
+        const gameId = req.params.id;
+        const game = await Game.findById(gameId);
+        
+        if (!game) {
+            return res.status(404).json({ message: 'Game not found' });
+        }
+        
+        res.status(200).json(game);
+    } catch (error) {
+        console.error('Error fetching game:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 };
