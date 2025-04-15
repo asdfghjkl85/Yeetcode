@@ -116,6 +116,24 @@ export const updateGameStatus = async (req, res) => {
   }
 };
 
+//Update game problems
+export const updateGameProblems = async (req, res) => {
+  try {
+    const { problems } = req.body; // Expect new status in body
+    const game = await Game.findById(req.params.id);
+
+    if (!game) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    game.leetcodeProblems = problems; // Update the game status
+    await game.save();
+    res.status(200).json(game);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating game status' });
+  }
+};
+
 // Get a game by invitation code
 export const getGameByInvitationCode = async (req, res) => {
   try {

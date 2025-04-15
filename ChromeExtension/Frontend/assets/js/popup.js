@@ -1,5 +1,6 @@
 import generateRandomCode from "./code_generator.js";
 
+
 const socket = new WebSocket("ws://localhost:3000/ws");
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }            
             const pollInterval = setInterval(() => {
+                console.log("Game id is: ", gameId);
                 fetch(`http://localhost:3000/api/games/${gameId}`)
                     .then(response => response.json())
                     .then(game => {
@@ -76,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // **Create Team Flow (Player 1)**
     if (createTeamButton) {
+
         createTeamButton.addEventListener("click", () => {
             localStorage.clear();
             chrome.storage.local.clear();
@@ -92,6 +95,10 @@ document.addEventListener("DOMContentLoaded", function () {
             toggleButtonState(startGameButton, false);
 
             if (!gameId) {
+                chrome.storage.local.set( {
+                    isPlayer1Api: true,
+                    isPlayer2Api: false
+                });
                 // Create game on backend
                 fetch("http://localhost:3000/api/games", {
                     method: "POST",
@@ -102,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(data => {
                     gameId = data._id;
                     chrome.storage.local.set({ gameId });
+                    localStorage.setItem("gameId", gameId);
                     socket.send(JSON.stringify({ type: "CREATE_GAME", gameId, invitation_code: code }));
                 })
                 .catch(error => console.error("Error creating game:", error));
@@ -122,6 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // **Join Team Flow (Player 2)**
     if (joinTeamButton) {
+        chrome.storage.local.set({
+            isPlayer1Api: false,
+            isPlayer2Api: true
+          });
         joinTeamButton.addEventListener("click", () => {
             window.location.href = "join-team-screen.html";
         });
