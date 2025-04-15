@@ -39,7 +39,14 @@ const GameSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: null
-  }
+  },
+
+  leetcodeProblems: {
+    type: [String],
+    default: [],
+
+  },
+
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', GameSchema);

@@ -1,9 +1,13 @@
+import { getGameProblems } from "../api/mongo_api.js";
+import { sendGameProblems } from "../api/mongo_api.js";
 // Get selected options from localStorage
 const selectedDifficulty = localStorage.getItem("gameDifficulty") || "easy";
 const selectedTime = localStorage.getItem("gameTime") || "60";
 const selectedProblemCount = parseInt(localStorage.getItem("gameProblems")) || 5;
 const player1Name = localStorage.getItem("Player1") || "Player 1";
 const player2Name = localStorage.getItem("Player2") || "Player 2";
+const gameId = localStorage.getItem("gameId");
+
 
 // Track selected problems for submission checking
 let selectedProblems = [];
@@ -24,11 +28,19 @@ function formatProblemTitle(problemId) {
 // Load problems from JSON file
 async function loadProblems() {
     try {
-        const response = await fetch('assets/data/problems.json');
-        const data = await response.json();
-        const problems = data[selectedDifficulty] || [];
-        console.log(`Loaded ${problems.length} problems for difficulty: ${selectedDifficulty}`);
-        return problems;
+        const { isPlayer1Api, isPlayer2Api } = await new Promise((resolve) => {
+            chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
+        });
+        if(isPlayer1Api){
+            const response = await fetch('assets/data/problems.json');
+            const data = await response.json();
+            const problems = data[selectedDifficulty] || [];
+            console.log(`Loaded ${problems.length} problems for difficulty: ${selectedDifficulty}`);
+            return problems;
+        } else {
+            console.log("Player is player 2. Sending no problems");
+            return [];
+        }
     } catch (error) {
         console.error('Error loading problems:', error);
         return [];
@@ -56,14 +68,39 @@ async function initializeGameTable() {
     const tableBody = document.querySelector('.game-table tbody');
     
     console.log(`Selected problem count: ${selectedProblemCount}`);
-    
-    // Randomly select problems based on count
-    selectedProblems = problems
+
+    const { isPlayer1Api, isPlayer2Api } = await new Promise((resolve) => {
+        chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
+      });
+
+    if(isPlayer1Api){
+        selectedProblems = problems
         .sort(() => Math.random() - 0.5)
         .slice(0, selectedProblemCount);
-    
-    console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
-    
+        console.log('HEREE IS THE GAME ID::', gameId);
+        console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
+        await sendGameProblems(selectedProblems, gameId)
+    } else {
+        problems = await new Promise((resolve, reject) => {
+            const pollInterval = setInterval(async () => {
+                const fetched = await getGameProblems(gameId);
+                if (fetched && fetched.length > 0) {
+                    console.log("Problems found for Player 2");
+                    clearInterval(pollInterval);
+                    resolve(fetched);
+                } else {
+                    console.log("Still waiting for problems to be set by Player 1...");
+                }
+            }, 1000);
+
+            setTimeout(() => {
+                clearInterval(pollInterval);
+                reject("Timed out waiting for problems.");
+            }, 30000);
+        });
+
+        selectedProblems = problems;
+    }
     // Clear existing rows
     tableBody.innerHTML = '';
     
