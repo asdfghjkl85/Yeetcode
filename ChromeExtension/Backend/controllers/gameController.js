@@ -160,3 +160,19 @@ export const deleteAllGames = async (req, res) => {
     res.status(500).json({ message: "Failed to delete games", error: error.message });
   }
 };
+
+export const getGameById = async (req, res) => {
+    try {
+        const gameId = req.params.id;
+        const game = await Game.findById(gameId);
+        
+        if (!game) {
+            return res.status(404).json({ message: 'Game not found' });
+        }
+        
+        res.status(200).json(game);
+    } catch (error) {
+        console.error('Error fetching game:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

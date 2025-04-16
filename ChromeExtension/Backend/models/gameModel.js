@@ -47,6 +47,26 @@ const GameSchema = new mongoose.Schema({
 
   },
 
+  settings: {
+    difficulty: {
+      type: String,
+      enum: ['easy', 'medium', 'hard'],
+      default: 'easy'
+    },
+    problemCount: {
+      type: Number,
+      default: 3
+    },
+    timeLimit: {
+      type: Number,
+      default: 60
+    },
+    battleType: {
+      type: String,
+      enum: ['friendly', 'competitive'],
+      default: 'friendly'
+    }
+  }
 }, { timestamps: true });
 
 const Game = mongoose.model('Game', GameSchema);

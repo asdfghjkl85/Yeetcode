@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('gameTime', timeLimit);
         localStorage.setItem('battleType', battleType);
 
-        // Update game status on the backend
+        // Update game status and settings on the backend
         await fetch(`http://localhost:3000/api/games/${gameState.gameId}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -122,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
             player_1: gameState.player1,
             settings: {
               difficulty,
-              problemCount,
-              timeLimit,
+              problemCount: parseInt(problemCount),
+              timeLimit: parseInt(timeLimit),
               battleType
             }
           })
@@ -137,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
             gameId: gameState.gameId,
             settings: {
               difficulty,
-              problemCount,
-              timeLimit,
+              problemCount: parseInt(problemCount),
+              timeLimit: parseInt(timeLimit),
               battleType
             }
           }));
