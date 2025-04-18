@@ -18,30 +18,30 @@ function countCompletedProblems(playerIndex) {
 }
 
 // Function to update the UI with submission status
-function updateSubmissionUI(submissions) {
-    console.log("Updating UI with submissions:", submissions);
-    submissions.forEach((playerSubmissions, playerIndex) => {
-        playerSubmissions.forEach((isCorrect, problemIndex) => {
-            const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
-            const box = document.getElementById(boxId);
-            if (box) {
-                // Only update if the problem is newly solved (wasn't solved before)
-                if (isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
-                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
-                } else if (!isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
-                    box.textContent = '🟡';
-                }
-            }
-        });
+// function updateSubmissionUI(submissions) {
+//     console.log("Updating UI with submissions:", submissions);
+//     submissions.forEach((playerSubmissions, playerIndex) => {
+//         playerSubmissions.forEach((isCorrect, problemIndex) => {
+//             const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
+//             const box = document.getElementById(boxId);
+//             if (box) {
+//                 // Only update if the problem is newly solved (wasn't solved before)
+//                 if (isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
+//                     box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
+//                 } else if (!isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
+//                     box.textContent = '🟡';
+//                 }
+//             }
+//         });
 
-        // Update the score display for each player
-        const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
-        if (scoreElement) {
-            const totalSolved = playerSubmissions.filter(Boolean).length;
-            scoreElement.textContent = totalSolved;
-        }
-    });
-}
+//         // Update the score display for each player
+//         const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
+//         if (scoreElement) {
+//             const totalSolved = playerSubmissions.filter(Boolean).length;
+//             scoreElement.textContent = totalSolved;
+//         }
+//     });
+// }
 
 // Function to determine winner and handle game over
 function handleGameOver() {

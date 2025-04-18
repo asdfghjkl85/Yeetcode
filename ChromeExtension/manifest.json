@@ -23,10 +23,10 @@
   },
 
   "web_accessible_resources": [
-    {
-      "resources": ["Frontend/js/*.js"],
-      "matches": ["<all_urls>"]
-    }
+  {
+    "resources": ["Frontend/assets/js/*"],
+    "matches": ["<all_urls>"]
+  }
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'"

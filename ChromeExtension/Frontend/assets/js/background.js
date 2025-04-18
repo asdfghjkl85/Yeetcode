@@ -4,29 +4,13 @@ socket.onopen = () => {
     console.log("WebSocket connected.");
 };
 
-socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === "PLAYER_JOINED") {
-        chrome.runtime.sendMessage({ type: "UPDATE_PLAYER_2", player2: data.player2, gameId: data.gameId });
-    }
-
-    if (data.type === "START_GAME") {
-        chrome.tabs.query({}, (tabs) => {
-            for (let tab of tabs) {
-                chrome.tabs.sendMessage(tab.id, { type: "START_GAME" });
-            }
-        });
-    }
-};
-
 // Listen for messages from popup.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (["CREATE_GAME", "PLAYER_JOINED", "START_GAME"].includes(message.type)) {
-        socket.send(JSON.stringify(message));
-    }
-    sendResponse({ status: "ok" });
-});
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//     if (["CREATE_GAME", "PLAYER_JOINED", "START_GAME"].includes(message.type)) {
+//         socket.send(JSON.stringify(message));
+//     }
+//     sendResponse({ status: "ok" });
+// });
 
 chrome.runtime.onInstalled.addListener(() =>  {
     chrome.sidePanel.setOptions({ path: "Frontend/login-page-screen.html" })

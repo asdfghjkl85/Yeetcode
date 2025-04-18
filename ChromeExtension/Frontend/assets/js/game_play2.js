@@ -49,10 +49,7 @@ function formatProblemTitle(problemId) {
 async function loadProblems() {
     try {
         // Get gameId from storage
-        const { gameId } = await new Promise((resolve) => {
-            chrome.storage.local.get(["gameId"], (data) => resolve(data));
-        });
-
+        const gameId = localStorage.getItem("gameId");
         if (!gameId) {
             console.error('No game ID found');
             return [];
@@ -100,16 +97,9 @@ async function initializeGameTable() {
         chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
       });
 
-    if(isPlayer1Api){
-        selectedProblems = problems
-        .sort(() => Math.random() - 0.5)
-        .slice(0, selectedProblemCount);
-        console.log('HEREE IS THE GAME ID::', gameId);
-        console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
-        await sendGameProblems(selectedProblems, gameId)
-    } else {
-        selectedProblems = problems; 
-    }
+  
+    selectedProblems = problems; 
+    
     // Clear existing rows
     tableBody.innerHTML = '';
     

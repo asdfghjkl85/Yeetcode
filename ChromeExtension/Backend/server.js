@@ -20,32 +20,46 @@ let clients = {};
 
 // WebSocket connection handling
 wss.on("connection", (ws) => {
-    console.log("New WebSocket connection");
+  console.log("New WebSocket connection");
 
-    ws.on("message", (message) => {
-        const data = JSON.parse(message);
-        
-        if (data.type === "CREATE_GAME") {
-            clients[data.gameId] = ws;
-        }
+  let currentGameId = null;
 
-        if (data.type === "PLAYER_JOINED") {
-            if (clients[data.gameId]) {
-                clients[data.gameId].send(JSON.stringify(data));
-            }
-        }
+  ws.on("message", (message) => {
+    const data = JSON.parse(message);
+    const gameId = data.gameId;
 
-        if (data.type === "START_GAME") {
-            if (clients[data.gameId]) {
-                clients[data.gameId].send(JSON.stringify(data));
-            }
-        }
+    // First time we see a socket, store it
+    if (!clients[gameId]) {
+      clients[gameId] = new Set();
+    }
+
+    // If not already stored, add this socket to the game
+    if (!clients[gameId].has(ws)) {
+      clients[gameId].add(ws);
+      currentGameId = gameId;
+    }
+
+    console.log("Received message:", data);
+
+    // Send to all clients in the same game
+    clients[gameId].forEach((client) => {
+      if (client.readyState === ws.OPEN) {
+        client.send(JSON.stringify(data));
+      }
     });
+  });
 
-    ws.on("close", () => {
-        console.log("WebSocket closed");
-    });
+  ws.on("close", () => {
+    console.log("WebSocket closed");
+    if (currentGameId && clients[currentGameId]) {
+      clients[currentGameId].delete(ws);
+      if (clients[currentGameId].size === 0) {
+        delete clients[currentGameId];
+      }
+    }
+  });
 });
+
 
 app.get("/", (_, res) => res.json({ message: "Welcome to Yeetcode API" }));
 
