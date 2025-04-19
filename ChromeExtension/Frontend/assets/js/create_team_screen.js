@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     startGameSetupButton.addEventListener("click", () => {
+      
         let player1Name = localStorage.getItem("leetcode_username");
         localStorage.setItem("player1",  player1Name);
 
