@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //Player 1
     if (createTeamButton) {
         createTeamButton.addEventListener("click", () => {
-            localStorage.clear();
             window.location.href = "create-team-screen.html";
         })
     }
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //Player 2
     if (joinTeamButton) {
         joinTeamButton.addEventListener("click", () => {
-            localStorage.clear();
             window.location.href = "join-team-screen.html";
         })
     }

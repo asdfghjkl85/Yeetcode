@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     confirmJoinButton.addEventListener("click", () => {
         const invCode = document.getElementById("inviteCode").value.trim();
-        const player2Name = document.getElementById("player2Name").value.trim() || "Player2 Dummy Name";
+        const player2Name = localStorage.getItem("leetcode_username");
 
         console.log("This is the invite code:", invCode);
 

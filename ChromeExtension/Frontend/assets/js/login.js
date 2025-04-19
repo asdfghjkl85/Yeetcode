@@ -32,17 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 // Store user data in chrome storage
-                chrome.storage.local.set({
-                    user: {
-                        yeetcode_id: data._id,
-                        yeetcode_username: data.yeetcode_username,
-                        leetcode_username: data.leetcode_username,
-                        token: data.token
-                    }
-                }, function() {
-                    // Redirect to main screen after successful login
-                    window.location.href = "main-screen.html";
-                });
+                localStorage.clear();
+                localStorage.setItem("leetcode_username", data.leetcode_username);
+                localStorage.setItem("yeetcode_username", yeetcode_username);
+                window.location.href = "main-screen.html";
             } else {
                 alert(data.message || "Login failed. Please check your credentials.");
             }
