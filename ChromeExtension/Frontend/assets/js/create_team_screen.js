@@ -2,12 +2,12 @@ import { generateRandomCode } from "./code_generator.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const inviteCodeElement = document.getElementById("inviteCode");
-    const startGameButton = document.getElementById("start-game-button");
+    const startGameSetupButton = document.getElementById("start-game-button-setup");
     const copyCodeButton = document.getElementById("copyCode");
 
     let socket = new WebSocket("ws://localhost:3000/ws");
 
-    createGame(inviteCodeElement, startGameButton, socket);
+    createGame(inviteCodeElement, startGameSetupButton, socket);
 
     if (copyCodeButton) {
         copyCodeButton.addEventListener("click", () => {
@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
         if (data.type === "PLAYER2_JOINED_send_1") {  
             localStorage.setItem("player2", data.player2);
-            startGameButton.disabled = false;
-            startGameButton.style.backgroundColor = "#eab764";
-            startGameButton.style.cursor = "default";
+            startGameSetupButton.disabled = false;
+            startGameSetupButton.style.backgroundColor = "#eab764";
+            startGameSetupButton.style.cursor = "default";
     
             // Create container if not present
             let player2Container = document.getElementById("player2-container");
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    startGameButton.addEventListener("click", () => {
+    startGameSetupButton.addEventListener("click", () => {
         let player1Name = localStorage.getItem("leetcode_username");
         localStorage.setItem("player1",  player1Name);
 
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-function createGame(inviteCodeElement, startGameButton, socket) {
+function createGame(inviteCodeElement, startGameSetupButton, socket) {
     localStorage.setItem("isPlayer1Api", "true");
     localStorage.setItem("isPlayer2Api", "false");
     if (!inviteCodeElement) return;
@@ -83,10 +83,10 @@ function createGame(inviteCodeElement, startGameButton, socket) {
     inviteCodeElement.innerText = invCode;
     localStorage.setItem("inviteCode", invCode);
 
-    if (startGameButton) {
-        startGameButton.disabled = true;
-        startGameButton.style.backgroundColor = "#555";
-        startGameButton.style.cursor = "not-allowed";
+    if (startGameSetupButton) {
+        startGameSetupButton.disabled = true;
+        startGameSetupButton.style.backgroundColor = "#555";
+        startGameSetupButton.style.cursor = "not-allowed";
     }
 
     fetch("http://localhost:3000/api/games", {
