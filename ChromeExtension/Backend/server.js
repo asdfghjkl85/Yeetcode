@@ -10,6 +10,7 @@ import { fetchRecentSubmissions } from './utils/leetcodeGraphQLQueries.js';
 import { validateUser } from './utils/leetcodeGraphQLQueries.js';
 import { deleteAllUsers } from './controllers/userController.js';
 import Game from './models/gameModel.js';
+import { send } from 'process';
 
 const app = express();
 const server = http.createServer(app);
@@ -18,33 +19,71 @@ const wss = new WebSocketServer({ server, path: "/ws" });
 // Store connected clients
 let clients = {};
 
+function sendToPlayers(gameId, message, target = "both") {
+  if (!clients[gameId]) return;
+
+  const data = JSON.stringify(message);
+
+  if (target === "player1" && clients[gameId].player1) {
+    clients[gameId].player1.send(data);
+  } else if (target === "player2" && clients[gameId].player2) {
+    clients[gameId].player2.send(data);
+  } else if (target === "both") {
+    if (clients[gameId].player1) clients[gameId].player1.send(data);
+    if (clients[gameId].player2) clients[gameId].player2.send(data);
+  }
+}
 // WebSocket connection handling
 wss.on("connection", (ws) => {
-    console.log("New WebSocket connection");
+  console.log("New WebSocket connection");
 
-    ws.on("message", (message) => {
-        const data = JSON.parse(message);
-        
-        if (data.type === "CREATE_GAME") {
-            clients[data.gameId] = ws;
-        }
+  ws.on("message", (message) => {
+      const data = JSON.parse(message);
+      const type = data.type;
+      const gameId = data.gameId;
+      const isPlayer1Api = data.isPlayer1Api;
 
-        if (data.type === "PLAYER_JOINED") {
-            if (clients[data.gameId]) {
-                clients[data.gameId].send(JSON.stringify(data));
-            }
-        }
+      if(!clients[gameId]) {
+        clients[gameId] = {};
+      }
 
-        if (data.type === "START_GAME") {
-            if (clients[data.gameId]) {
-                clients[data.gameId].send(JSON.stringify(data));
-            }
-        }
-    });
+    //game_created accepted_join_game player1_name  PLAYER2_JOINED GAME_STARTED  problems_sent
+    if(isPlayer1Api === 'true') {
+      clients[gameId].player1 = ws;
+      console.log("Player 1 registered to websocket. ")
+    } else {
+      clients[gameId].player2 = ws;
+      console.log("Player 2 registered to websocket. ")
+    }
 
-    ws.on("close", () => {
-        console.log("WebSocket closed");
-    });
+    if(type === 'connect') {
+      return;
+    }
+    if (type === "player1_name_send_2") {
+      sendToPlayers(gameId, data, "player2");
+    }
+    
+    if (type === "PLAYER2_JOINED_send_1") {
+      sendToPlayers(gameId, data, "player1");
+    }
+    
+    if (type === "accepted_join_game_send_2") {
+      sendToPlayers(gameId, data, "player2");
+    }
+    
+    if (type === "problems_sent_send_2") {
+      sendToPlayers(gameId, data, "player2");
+    }
+
+    if(type === "GAME_STARTED_send_2") {
+      sendToPlayers(gameId, data, "player2");
+    }
+    
+  });
+
+  ws.on("close", () => {
+      console.log("WebSocket closed");
+  });
 });
 
 app.get("/", (_, res) => res.json({ message: "Welcome to Yeetcode API" }));

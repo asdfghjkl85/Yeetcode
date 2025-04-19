@@ -1,5 +1,3 @@
-import { getGameProblems } from "../api/mongo_api.js";
-import { sendGameProblems } from "../api/mongo_api.js";
 // Get selected options from localStorage
 
 const player1Name = localStorage.getItem("Player1");
@@ -13,14 +11,13 @@ let selectedProblems = [];
 // Get game settings from storage
 let selectedProblemCount;
 
+
 async function getGameSettings() {
     try {
-        const { gameState } = await new Promise((resolve) => {
-            chrome.storage.local.get(["gameState"], (data) => resolve(data));
-        });
+        let gameState = JSON.parse(localStorage.getItem('gameState'));
 
-        if (gameState && gameState.settings) {
-            selectedProblemCount = gameState.settings.problemCount;
+        if (gameState.status === 'in_progress') {
+            selectedProblemCount = gameState.problemCount;
             console.log("Selected problem count:", selectedProblemCount);
         } else {
             console.error("No game settings found");
@@ -45,34 +42,6 @@ function formatProblemTitle(problemId) {
         .join(' ');
 }
 
-// Load problems from database
-async function loadProblems() {
-    try {
-        // Get gameId from storage
-        const { gameId } = await new Promise((resolve) => {
-            chrome.storage.local.get(["gameId"], (data) => resolve(data));
-        });
-
-        if (!gameId) {
-            console.error('No game ID found');
-            return [];
-        }
-
-        // Fetch problems from database
-        const response = getGameProblems(gameId);
-        
-        if (response) {
-            console.log("Problems found in database, problems:", response);
-            return response;
-        } else {
-            console.log("No problems found in database");
-            return [];
-        }
-    } catch (error) {
-        console.error('Error loading problems:', error);
-        return [];
-    }
-}
 
 // Create problem row HTML
 function createProblemRow(problemId, index) {
@@ -91,25 +60,16 @@ function createProblemRow(problemId, index) {
 
 // Initialize game table
 async function initializeGameTable() {
-    let problems = await loadProblems();
+    let problems = JSON.parse(localStorage.getItem("selectedProblems"));
     const tableBody = document.querySelector('.game-table tbody');
     
     console.log(`Selected problem count: ${problems.length}`);
 
-    const { isPlayer1Api, isPlayer2Api } = await new Promise((resolve) => {
-        chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
-      });
-
-    if(isPlayer1Api){
-        selectedProblems = problems
-        .sort(() => Math.random() - 0.5)
-        .slice(0, selectedProblemCount);
-        console.log('HEREE IS THE GAME ID::', gameId);
-        console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
-        await sendGameProblems(selectedProblems, gameId)
-    } else {
-        selectedProblems = problems; 
-    }
+    const isPlayer1Api = localStorage.getItem("isPlayer1Api")
+    const isPlayer2Api = localStorage.getItem("isPlayer2Api")
+  
+    selectedProblems = problems; 
+    
     // Clear existing rows
     tableBody.innerHTML = '';
     
@@ -119,8 +79,8 @@ async function initializeGameTable() {
     });
     
     // Update player names in the table header
-    document.getElementById("gamePlayer1").textContent = player1Name;
-    document.getElementById("gamePlayer2").textContent = player2Name;
+    document.getElementById("gamePlayer1").textContent = localStorage.getItem("player1");
+    document.getElementById("gamePlayer2").textContent = localStorage.getItem("player2");
 
     // Initialize submission tracking array
     window.currentCorrectSubmissions = Array(2).fill().map(() => Array(selectedProblemCount).fill(false));
@@ -164,15 +124,28 @@ function updateSubmissionUI(submissions) {
 
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', async () => {
-    await getGameSettings();
-    console.log(`Starting game with ${selectedProblemCount} problems`);
-    initializeGameTable();
-    
-    // Listen for submission updates from background script
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'submissionUpdate') {
-            console.log("Received submission update:", message.submissions);
-            updateSubmissionUI(message.submissions);
+    const socket = new WebSocket("ws://localhost:3000/ws");
+    socket.onopen = () => {
+        socket.send(JSON.stringify({
+            type: "connect",
+            isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+            isPlayer2Api: localStorage.getItem("isPlayer2Api")
+        }))
+    }
+
+    socket.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "problems_sent_send_2") {
+            console.log("Problems sent over successfully");
+            localStorage.setItem("gameState", JSON.stringify(data.gameState));
+            localStorage.setItem("selectedProblems", JSON.stringify(data.selectedProblems));
         }
-    });
+        await getGameSettings();
+        await initializeGameTable();
+
+    }
+    console.log(`Starting game with ${selectedProblemCount} problems`);
+    
+ 
 }); 
+

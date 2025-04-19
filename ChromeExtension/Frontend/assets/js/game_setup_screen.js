@@ -21,7 +21,7 @@ function updateCenteredValue(pickerElement) {
   const centerY = rect.top + rect.height / 2;
   let closestDiff = Infinity;
   let centeredValue = null;
-  
+
   pickerElement.querySelectorAll('.picker-item').forEach(item => {
     const itemRect = item.getBoundingClientRect();
     const itemCenterY = itemRect.top + itemRect.height / 2;
@@ -31,7 +31,7 @@ function updateCenteredValue(pickerElement) {
       centeredValue = item.getAttribute('data-value');
     }
   });
-  
+
   if (centeredValue !== null) {
     pickerElement.setAttribute('data-value', centeredValue);
   }
@@ -50,7 +50,26 @@ function attachScrollListener(pickerElement) {
 
 // Wait for the DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
+  const socket = new WebSocket("ws://localhost:3000/ws");
+  socket.onopen = () => {
+    socket.send(JSON.stringify({
+        type: "connect",
+        isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+        isPlayer2Api: localStorage.getItem("isPlayer2Api")
+    }))
+}
+
+//SET THE GAME STATE
+  let gameState = {
+    status: "set_up",
+    difficulty: "",
+    problemCount: 0,
+    timeLimit: "",
+    battleType: ""
+  }
+  localStorage.setItem("gameState", JSON.stringify(gameState));
   // Initialize game settings
+
   let selectedDifficulty = "easy";
   let selectedBattleType = "friendly";
   let selectedProblems = 3;
@@ -59,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Generate picker items
   generatePickerItems('problem-picker', problemOptions);
   generatePickerItems('time-picker', timeOptions, (val) => `${val} min`);
-  
+
   // Attach scroll listeners and initialize the centered values
   document.querySelectorAll('.ios-picker').forEach(picker => {
     attachScrollListener(picker);
@@ -75,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedDifficulty = btn.id.replace('-btn', '');
     });
   });
-  
+
   // Battle type buttons
   const battleTypeBtns = document.querySelectorAll('.battle-type-btn');
   battleTypeBtns.forEach(btn => {
@@ -89,15 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start button
   const startBtn = document.getElementById("start-btn");
   if (startBtn) {
-    startBtn.addEventListener("click", async function() {
+    startBtn.addEventListener("click", async function () {
       try {
-        // Get game state from storage
-        const gameState = await new Promise((resolve) => {
-          chrome.storage.local.get(['gameState'], (result) => resolve(result.gameState));
-        });
-
-        if (!gameState) {
-          console.error('No game state found');
+        // Get game state from localStorage
+        let gameState = JSON.parse(localStorage.getItem('gameState'));
+        if(gameState.status != "set_up") {
+          console.log("No game state found");
           return;
         }
 
@@ -107,19 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeLimit = document.getElementById('time-picker').getAttribute('data-value');
         const battleType = document.querySelector('.battle-type-btn.active').textContent.toLowerCase();
 
-        // Store game settings
-        localStorage.setItem('gameDifficulty', difficulty);
-        localStorage.setItem('gameProblems', problemCount);
-        localStorage.setItem('gameTime', timeLimit);
-        localStorage.setItem('battleType', battleType);
+        // Store game settings in localStorage
+        gameState.difficulty =difficulty;
+        gameState.problemCount = problemCount
+        gameState.timeLimit = timeLimit 
+        gameState.battleType = battleType
+        gameState.status = "in_progress"
 
+        localStorage.setItem("gameState", JSON.stringify(gameState));
+        const gameId = localStorage.getItem("gameId");
+        const player1 = localStorage.getItem("Player1");
         // Update game status and settings on the backend
-        await fetch(`http://localhost:3000/api/games/${gameState.gameId}/status`, {
+        await fetch(`http://localhost:3000/api/games/${gameId}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            status: "in_progress", 
-            player_1: gameState.player1,
+          body: JSON.stringify({
+            status: "in_progress",
+            player_1: player1,
             settings: {
               difficulty,
               problemCount: parseInt(problemCount),
@@ -129,27 +149,19 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
-        // Send WebSocket message about game start
-        const socket = new WebSocket("ws://localhost:3000/ws");
-        socket.onopen = () => {
-          socket.send(JSON.stringify({ 
-            type: "START_GAME", 
-            gameId: gameState.gameId,
-            settings: {
-              difficulty,
-              problemCount: parseInt(problemCount),
-              timeLimit: parseInt(timeLimit),
-              battleType
-            }
-          }));
-          
-          // Navigate to game play screen
-          window.location.href = "game-play-screen.html";
-        };
+        // Navigate to game play screen
+        
+        socket.send(JSON.stringify({
+          type: "GAME_STARTED_send_2",
+          isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+          isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+          gameId: localStorage.getItem("gameId"),
+        }));
+
+        window.location.href = "game-play-screen.html";
       } catch (err) {
         console.error("Failed to start game:", err);
       }
     });
   }
 });
-  

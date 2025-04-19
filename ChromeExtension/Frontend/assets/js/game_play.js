@@ -1,12 +1,14 @@
-import { getGameProblems } from "../api/mongo_api.js";
 import { sendGameProblems } from "../api/mongo_api.js";
 // Get selected options from localStorage
-const selectedDifficulty = localStorage.getItem("gameDifficulty") || "easy";
-const selectedTime = localStorage.getItem("gameTime") || "60";
-const selectedProblemCount = parseInt(localStorage.getItem("gameProblems")) || 5;
+let gameState = JSON.parse(localStorage.getItem('gameState'));
+const selectedDifficulty = gameState.difficulty || "easy";
+const selectedTime = gameState.timeLimit || "60";
+const selectedProblemCount = gameState.problemCount|| 5;
 const player1Name = localStorage.getItem("Player1") || "Player 1";
 const player2Name = localStorage.getItem("Player2") || "Player 2";
 const gameId = localStorage.getItem("gameId");
+const battleType = gameState.battleType || "unknown"
+
 
 
 // Track selected problems for submission checking
@@ -28,19 +30,11 @@ function formatProblemTitle(problemId) {
 // Load problems from JSON file
 async function loadProblems() {
     try {
-        const { isPlayer1Api, isPlayer2Api } = await new Promise((resolve) => {
-            chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
-        });
-        if(isPlayer1Api){
-            const response = await fetch('assets/data/problems.json');
-            const data = await response.json();
-            const problems = data[selectedDifficulty] || [];
-            console.log(`Loaded ${problems.length} problems for difficulty: ${selectedDifficulty}`);
-            return problems;
-        } else {
-            console.log("Player is player 2. Sending no problems");
-            return [];
-        }
+        const response = await fetch('assets/data/problems.json');
+        const data = await response.json();
+        const problems = data[selectedDifficulty] || [];
+        console.log(`Loaded ${problems.length} problems for difficulty: ${selectedDifficulty}`);
+        return problems;    
     } catch (error) {
         console.error('Error loading problems:', error);
         return [];
@@ -63,44 +57,28 @@ function createProblemRow(problemId, index) {
 }
 
 // Initialize game table
-async function initializeGameTable() {
+async function initializeGameTable(socket) {
     const problems = await loadProblems();
     const tableBody = document.querySelector('.game-table tbody');
     
     console.log(`Selected problem count: ${selectedProblemCount}`);
+    selectedProblems = problems
+    .sort(() => Math.random() - 0.5)
+    .slice(0, selectedProblemCount);
+    console.log('HEREE IS THE GAME ID::', gameId);
+    console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
+    await sendGameProblems(selectedProblems, gameId)
 
-    const { isPlayer1Api, isPlayer2Api } = await new Promise((resolve) => {
-        chrome.storage.local.get(["isPlayer1Api", "isPlayer2Api"], (data) => resolve(data));
-      });
+    localStorage.setItem("selectedProblems", JSON.stringify(selectedProblems));
 
-    if(isPlayer1Api){
-        selectedProblems = problems
-        .sort(() => Math.random() - 0.5)
-        .slice(0, selectedProblemCount);
-        console.log('HEREE IS THE GAME ID::', gameId);
-        console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
-        await sendGameProblems(selectedProblems, gameId)
-    } else {
-        problems = await new Promise((resolve, reject) => {
-            const pollInterval = setInterval(async () => {
-                const fetched = await getGameProblems(gameId);
-                if (fetched && fetched.length > 0) {
-                    console.log("Problems found for Player 2");
-                    clearInterval(pollInterval);
-                    resolve(fetched);
-                } else {
-                    console.log("Still waiting for problems to be set by Player 1...");
-                }
-            }, 1000);
+    socket.send(JSON.stringify({
+        type: "problems_sent_send_2",
+        isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+        isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+        gameState: JSON.parse(localStorage.getItem("gameState")),
+        selectedProblems: JSON.parse(localStorage.getItem("selectedProblems")),
+    }));
 
-            setTimeout(() => {
-                clearInterval(pollInterval);
-                reject("Timed out waiting for problems.");
-            }, 30000);
-        });
-
-        selectedProblems = problems;
-    }
     // Clear existing rows
     tableBody.innerHTML = '';
     
@@ -110,8 +88,8 @@ async function initializeGameTable() {
     });
     
     // Update player names in the table header
-    document.getElementById("gamePlayer1").textContent = player1Name;
-    document.getElementById("gamePlayer2").textContent = player2Name;
+    document.getElementById("gamePlayer1").textContent = localStorage.getItem("player1");
+    document.getElementById("gamePlayer2").textContent = localStorage.getItem("player2");
 
     // Initialize submission tracking array
     window.currentCorrectSubmissions = Array(2).fill().map(() => Array(selectedProblemCount).fill(false));
@@ -155,14 +133,15 @@ function updateSubmissionUI(submissions) {
 
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', () => {
+    let socket = new WebSocket("ws://localhost:3000/ws");
+    socket.onopen = () => {
+        socket.send(JSON.stringify({
+            type: "connect",
+            isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+            isPlayer2Api: localStorage.getItem("isPlayer2Api")
+        }))
+    }
     console.log(`Starting game with ${selectedProblemCount} problems`);
-    initializeGameTable();
+    initializeGameTable(socket);
     
-    // Listen for submission updates from background script
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'submissionUpdate') {
-            console.log("Received submission update:", message.submissions);
-            updateSubmissionUI(message.submissions);
-        }
-    });
 }); 
