@@ -51,9 +51,25 @@ function attachScrollListener(pickerElement) {
 // Wait for the DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
   const socket = new WebSocket("ws://localhost:3000/ws");
+  socket.onopen = () => {
+    socket.send(JSON.stringify({
+        type: "connect",
+        isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+        isPlayer2Api: localStorage.getItem("isPlayer2Api")
+    }))
+}
 
-  localStorage.setItem("gameState", "set_up");
+//SET THE GAME STATE
+  let gameState = {
+    status: "set_up",
+    difficulty: "",
+    problemCount: 0,
+    timeLimit: "",
+    battleType: ""
+  }
+  localStorage.setItem("gameState", JSON.stringify(gameState));
   // Initialize game settings
+
   let selectedDifficulty = "easy";
   let selectedBattleType = "friendly";
   let selectedProblems = 3;
@@ -95,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     startBtn.addEventListener("click", async function () {
       try {
         // Get game state from localStorage
-        const gameState = localStorage.getItem('gameState');
-        if(gameState != "set_up") {
+        let gameState = JSON.parse(localStorage.getItem('gameState'));
+        if(gameState.status != "set_up") {
           console.log("No game state found");
           return;
         }
@@ -108,18 +124,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const battleType = document.querySelector('.battle-type-btn.active').textContent.toLowerCase();
 
         // Store game settings in localStorage
-        localStorage.setItem('gameDifficulty', difficulty);
-        localStorage.setItem('problemCount', problemCount);
-        localStorage.setItem('gameTime', timeLimit);
-        localStorage.setItem('battleType', battleType);
+        gameState.difficulty =difficulty;
+        gameState.problemCount = problemCount
+        gameState.timeLimit = timeLimit 
+        gameState.battleType = battleType
+        gameState.status = "in_progress"
 
+        localStorage.setItem("gameState", JSON.stringify(gameState));
+        const gameId = localStorage.getItem("gameId");
+        const player1 = localStorage.getItem("Player1");
         // Update game status and settings on the backend
-        await fetch(`http://localhost:3000/api/games/${gameState.gameId}/status`, {
+        await fetch(`http://localhost:3000/api/games/${gameId}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             status: "in_progress",
-            player_1: gameState.player1,
+            player_1: player1,
             settings: {
               difficulty,
               problemCount: parseInt(problemCount),
@@ -129,11 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
-        localStorage.setItem("gameState", "in_progress");
         // Navigate to game play screen
         
         socket.send(JSON.stringify({
-          type: "GAME_STARTED",
+          type: "GAME_STARTED_send_2",
+          isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+          isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+          gameId: localStorage.getItem("gameId"),
         }));
 
         window.location.href = "game-play-screen.html";

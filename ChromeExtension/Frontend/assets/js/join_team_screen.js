@@ -24,10 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("gameId", data._id);
                 localStorage.setItem("inviteCode", invCode);
                 socket.send(JSON.stringify({ 
-                    type: "PLAYER2_JOINED", 
+                    type: "PLAYER2_JOINED_send_1", 
                     gameId: data._id, 
                     inviteCode: invCode, // use inviteCode
-                    player2: player2Name 
+                    player2: player2Name,
+                    isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+                    isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+                    player2: localStorage.getItem("player2")
                 }));
                 console.log("Player 2 joined, polling for game start...");
             }
@@ -39,21 +42,18 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("Received WebSocket message:", data);
-        if (data.type === "accepted_join_game") {
+        if (data.type === "accepted_join_game_send_2") {
             console.log("Successfully joined game!");
-        } else if (data.type === "player1_name") {
+            
+        } else if (data.type === "player1_name_send_2") {
             console.log("Successfully got player1's name");
             localStorage.setItem("player1", data.player1);
-        } else if (data.type === "problems_sent") {
-            console.log("Problems sent over successfully");
-            localStorage.setItem("difficulty", data.difficulty);
-            localStorage.setItem("problemCount", data.problemCount);
-            localStorage.setItem("gameTime", data.gameTime);
-            localStorage.setItem("battleType", data.battleType);
-        } else if(data.type === "GAME_STARTED") {
+
+        } else if(data.type === "GAME_STARTED_send_2") {
             window.location.href = "game-play-screen2.html"; 
+
         } else {
-            console.warn("Unhandled WebSocket message type:", data.type);
+            console.warn("Unfamiliar socket type message:", data.type);
         }
     };
 });

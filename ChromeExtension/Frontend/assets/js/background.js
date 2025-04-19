@@ -1,9 +1,3 @@
-const socket = new WebSocket("ws://localhost:3000/ws");
-
-socket.onopen = () => {
-    console.log("WebSocket connected.");
-};
-
 // Listen for messages from popup.js
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //     if (["CREATE_GAME", "PLAYER_JOINED", "START_GAME"].includes(message.type)) {
