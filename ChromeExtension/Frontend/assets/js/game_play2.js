@@ -1,4 +1,5 @@
 // Get selected options from localStorage
+import { startTimer } from "./timer2.js";
 
 const player1Name = localStorage.getItem("Player1");
 const player2Name = localStorage.getItem("Player2");
@@ -142,10 +143,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         await getGameSettings();
         await initializeGameTable();
+        let gameState = JSON.parse(localStorage.getItem("gameState"));
+        startTimer(gameState.timeLimit, 0);
 
     }
     console.log(`Starting game with ${selectedProblemCount} problems`);
-    
  
 }); 
 
