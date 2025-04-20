@@ -1,12 +1,12 @@
 import updateSubmission from "../../../Backend/utils/gameLoop.js";
 import { userRecentSubmissions } from "../api/graphql_apis.js";
+import { getNextTime, timeFormated, titleToSlug } from "./utils.js";
 
-const CHECKING_IF_PASSED = true; //Can change this to true if want to check a submission passed
-const CYCLE_AMOUNT = 15; //Number of seconds per API Call
 const NUM_USERS = 2;
+let gameState = JSON.parse(localStorage.getItem("gameState"));
 
 // Initialize time from localStorage or default to 10 minutes
-var numMinutes = parseInt(localStorage.getItem("gameTime")) || 10;
+var numMinutes = gameState.timeLimit|| 10;
 var numSeconds = 0;
 
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
@@ -79,36 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
 });
 
-function getNextTime(minutes, seconds) {
-    //precondition: minutes and/or seconds > 0
-    if (seconds === 0) {
-        if (minutes === 0) {
-            return [0, 0]; // prevent negative time
-        }
-        --minutes;
-        seconds = 59;
-    } else {
-        --seconds;
-    }
-    return [minutes, seconds];
-}
-
-function timeFormated(minutes, seconds) {
-    //0 <= minutes, seconds < 60
-    var timeOutput = ``;
-    if (minutes < 10) {timeOutput += `0`;}
-    timeOutput += `${minutes}:`;
-    if (seconds < 10) {timeOutput += `0`;}
-    timeOutput += `${seconds}`;
-    return timeOutput;
-}
-
-function titleToSlug(title) {
-    return title.toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-}
-
 var intervalTimer = setInterval(async function() {
     const nextTime = getNextTime(numMinutes, numSeconds);
     numMinutes = nextTime[0];
@@ -117,8 +87,6 @@ var intervalTimer = setInterval(async function() {
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (message.action === "triggerUserSubmissionAPICall") {
             console.log("Clicked on submit button");
-            //I don't want to run these few lines more than once!
-            //so maybe make window.PROBLEM_TO_HASH and window.USER_TO_HASH a thing
             const problemList = window.PROBLEM_LIST;
             const NUM_PROBLEMS = problemList.length;
             let userList = [window.PLAYER1, window.PLAYER2];
