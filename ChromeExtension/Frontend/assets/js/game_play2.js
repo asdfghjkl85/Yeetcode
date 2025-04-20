@@ -1,9 +1,8 @@
 // Get selected options from localStorage
-import { startTimer } from "./timer2.js";
-
-const player1Name = localStorage.getItem("Player1");
-const player2Name = localStorage.getItem("Player2");
+const player1Name = localStorage.getItem("player1") || "Player 1";
+const player2Name = localStorage.getItem("player2") || "Player 2";
 const gameId = localStorage.getItem("gameId");
+
 
 
 // Track selected problems for submission checking
@@ -129,8 +128,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     socket.onopen = () => {
         socket.send(JSON.stringify({
             type: "connect",
-            isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
-            isPlayer2Api: localStorage.getItem("isPlayer2Api")
+            isPlayer1Api: localStorage.getItem("isPlayer1Api"),
+            isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+            gameId: gameId
         }))
     }
 
@@ -140,14 +140,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Problems sent over successfully");
             localStorage.setItem("gameState", JSON.stringify(data.gameState));
             localStorage.setItem("selectedProblems", JSON.stringify(data.selectedProblems));
+            await getGameSettings();
+            await initializeGameTable();
+            console.log(`Starting game with ${selectedProblemCount} problems`);
+            let gameState = JSON.parse(localStorage.getItem("gameState"));
         }
-        await getGameSettings();
-        await initializeGameTable();
-        let gameState = JSON.parse(localStorage.getItem("gameState"));
-        startTimer(gameState.timeLimit, 0);
-
+        if(data.type === "updateUI_send_2_rebound") {
+            localStorage.setItem("problemMapPlayer1", JSON.stringify(data.problemMapPlayer1));
+            chrome.runtime.sendMessage({
+                action: "updateUI_send_2_rebound_2", 
+            });
+        }
     }
-    console.log(`Starting game with ${selectedProblemCount} problems`);
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if(request.action === "updateUI_send_1_rebound") {
+            let socketPayload = {
+                type: "updateUI_send_1_rebound",
+                problemMapPlayer2: JSON.parse(localStorage.getItem("problemMapPlayer2")), 
+                isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+                isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+                gameId: localStorage.getItem("gameId"),
+            };
+            
+            socket.send(JSON.stringify(socketPayload));
+        }
+    })
+
+    
  
 }); 
 

@@ -4,8 +4,8 @@ let gameState = JSON.parse(localStorage.getItem('gameState'));
 const selectedDifficulty = gameState.difficulty || "easy";
 const selectedTime = gameState.timeLimit || "60";
 const selectedProblemCount = gameState.problemCount|| 5;
-const player1Name = localStorage.getItem("Player1") || "Player 1";
-const player2Name = localStorage.getItem("Player2") || "Player 2";
+const player1Name = localStorage.getItem("player1") || "Player 1";
+const player2Name = localStorage.getItem("player2") || "Player 2";
 const gameId = localStorage.getItem("gameId");
 const battleType = gameState.battleType || "unknown"
 
@@ -77,6 +77,7 @@ async function initializeGameTable(socket) {
         isPlayer2Api: localStorage.getItem("isPlayer2Api"),
         gameState: JSON.parse(localStorage.getItem("gameState")),
         selectedProblems: JSON.parse(localStorage.getItem("selectedProblems")),
+        gameId: gameId
     }));
 
     // Clear existing rows
@@ -109,27 +110,6 @@ async function initializeGameTable(socket) {
     console.log("Game start time set to:", new Date(window.GAME_START_TIME).toISOString());
 }
 
-// Update UI with submission status
-function updateSubmissionUI(submissions) {
-    console.log("Updating UI with submissions:", submissions);
-    submissions.forEach((playerSubmissions, playerIndex) => {
-        playerSubmissions.forEach((isCorrect, problemIndex) => {
-            const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
-            const box = document.getElementById(boxId);
-            if (box) {
-                box.textContent = isCorrect ? '🟢' : '🟡';
-            }
-        });
-        
-        // Update the score display for each player
-        const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
-        if (scoreElement) {
-            const totalSolved = playerSubmissions.filter(Boolean).length;
-            console.log(`Player ${playerIndex + 1} solved ${totalSolved} problems`);
-            scoreElement.textContent = totalSolved;
-        }
-    });
-}
 
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', () => {
@@ -138,10 +118,38 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.send(JSON.stringify({
             type: "connect",
             isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
-            isPlayer2Api: localStorage.getItem("isPlayer2Api")
+            isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+            gameId: gameId
         }))
     }
     console.log(`Starting game with ${selectedProblemCount} problems`);
     initializeGameTable(socket);
-    
+
+    //Listen for UI updtes
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if(data.type === "updateUI_send_1_rebound") {
+            localStorage.setItem("problemMapPlayer2", JSON.stringify(data.problemMapPlayer2));
+            chrome.runtime.sendMessage({
+                action: "updateUI_send_1_rebound_2", 
+            });
+        }
+    }   
+
+    //Send UI updates
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if(request.action === "updateUI_send_2_rebound") {
+            console.log("WE GOT HERE MESSAGE Sent")
+            let socketPayload = {
+                type: "updateUI_send_2_rebound",
+                isPlayer1Api: localStorage.getItem("isPlayer1Api"),
+                isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+                problemMapPlayer1: JSON.parse(localStorage.getItem("problemMapPlayer1")), 
+                gameId: localStorage.getItem("gameId"),
+            };
+            
+            socket.send(JSON.stringify(socketPayload));
+        }
+    })
 }); 

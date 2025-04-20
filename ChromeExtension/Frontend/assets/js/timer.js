@@ -12,36 +12,6 @@ var numSeconds = 0;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
-// Function to count completed problems for a player
-function countCompletedProblems(playerIndex) {
-    return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
-}
-
-// Function to update the UI with submission status
-// function updateSubmissionUI(submissions) {
-//     console.log("Updating UI with submissions:", submissions);
-//     submissions.forEach((playerSubmissions, playerIndex) => {
-//         playerSubmissions.forEach((isCorrect, problemIndex) => {
-//             const boxId = `player${playerIndex + 1}Box${problemIndex + 1}`;
-//             const box = document.getElementById(boxId);
-//             if (box) {
-//                 // Only update if the problem is newly solved (wasn't solved before)
-//                 if (isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
-//                     box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
-//                 } else if (!isCorrect && !window.currentCorrectSubmissions[playerIndex][problemIndex]) {
-//                     box.textContent = '🟡';
-//                 }
-//             }
-//         });
-
-//         // Update the score display for each player
-//         const scoreElement = document.getElementById(`player${playerIndex + 1}-score`);
-//         if (scoreElement) {
-//             const totalSolved = playerSubmissions.filter(Boolean).length;
-//             scoreElement.textContent = totalSolved;
-//         }
-//     });
-// }
 
 // Function to determine winner and handle game over
 function handleGameOver() {
@@ -74,77 +44,134 @@ function handleGameOver() {
     }, 100);
 }
 
+// Update UI with submission status
+function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
+    if(Object.keys(problemMapPlayer1).length > 0){
+        let checkForWinner = 0;
+
+        problemList.forEach((title, index) => {
+            const slug = titleToSlug(title); 
+            const status = problemMapPlayer1[slug];
+
+            const boxId = `player1Box${index+1}`;
+            const box = document.getElementById(boxId);
+
+            if(box && status) {
+                if(status === "Accepted") {
+                    box.textContent = "🟢";
+                    checkForWinner++;
+                } else if(status === "in_progress") {
+
+                } else{
+                    box.textContent = "❌"
+                }
+            }
+            
+        })
+
+        if(checkForWinner === problemList.length) {
+            console.log("PLAYER 1 won!")
+        } else {
+            checkForWinner = 0;
+        }
+
+        localStorage.setItem("problemMapPlayer1", JSON.stringify(problemMapPlayer1));
+
+        console.log("We got to first send")
+        chrome.runtime.sendMessage({
+            action: "updateUI_send_2", 
+        });
+    }
+
+    if(Object.keys(problemMapPlayer2).length > 0) {
+        let checkForWinner = 0;
+        problemList.forEach((title, index) => {
+
+            const slug = titleToSlug(title); 
+            const status = problemMapPlayer2[slug];
+
+            const boxId = `player2Box${index+1}`;
+            const box = document.getElementById(boxId);
+
+            if(box && status) {
+                if(status === "Accepted") {
+                    box.textContent = "🟢";
+                    checkForWinner++;
+                } else if(status === "in_progress") {
+
+                } else{
+                    box.textContent = "❌"
+                }
+            }
+        })
+        
+        if(checkForWinner === problemList.length) {
+            console.log("PLAYER 2 won!")
+        } else {
+            checkForWinner = 0;
+        }
+    
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
     // Initialize timer display with selected time
     document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
-});
-
-var intervalTimer = setInterval(async function() {
     const nextTime = getNextTime(numMinutes, numSeconds);
+    const player1 = localStorage.getItem("player1");
+    const player2 = localStorage.getItem("player2");
+
+    let problemMapPlayer1 = {}
+    let problemList = []
+
+
     numMinutes = nextTime[0];
     numSeconds = nextTime[1];
 
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+
         if (message.action === "triggerUserSubmissionAPICall") {
+
             console.log("Clicked on submit button");
-            const problemList = window.PROBLEM_LIST;
-            const NUM_PROBLEMS = problemList.length;
-            let userList = [window.PLAYER1, window.PLAYER2];
-            let userToHash = new Map();  //assign each user a number
-            let problemToHash = new Map();  //assign each problem a number 
-            for (var i = 0; i < NUM_USERS; i++) {
-                userToHash.set(userList[i], i);
-            }
-            for (var i = 0; i < NUM_PROBLEMS; i++) {
-                problemToHash.set(problemList[i], i);
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
             }
 
-            // Check if submission has changed
-            for (const PLAYER of userList) {
-                const recentSubmissions = await userRecentSubmissions(PLAYER, 1);
-                const title = titleToSlug(recentSubmissions[0].title);
-                const timestamp = recentSubmissions[0].timestamp;
-                const status = recentSubmissions[0].status;
-                
-                const playerIdx = userToHash.get(PLAYER);
-                let titleIdx = null;
-                if (problemToHash.has(title)) {
-                    titleIdx = problemToHash.get(title);
-                }
-                else {
-                    //edge case: current player solved a problem not on the sheet
-                    continue;
-                }
-
-                const boxId = `player${playerIdx + 1}Box${titleIdx + 1}`;
-                const box = document.getElementById(boxId);
-                if (box) {
-                    if (status == "Accepted") {
-                        currentCorrectSubmissions[playerIdx][titleIdx] = true;
-                        box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
-                    }
-                    else {
-                        box.innerHTML = '<img src="assets/images/xmark.png" alt="x" style="width: 30px; height: 30px;">';
-                    }
-                    console.log(currentCorrectSubmissions);
+            if(Object.keys(problemMapPlayer1).length  === 0) {
+                for (let i = 0; i < problemList.length; i++) {
+                    let slug = titleToSlug(problemList[i]);
+                    problemMapPlayer1[slug] = "in_progress";
                 }
             }
+            let recentSubmissions = await userRecentSubmissions(player1, 1);
+            let title = titleToSlug(recentSubmissions[0].title);
+            let timestamp = recentSubmissions[0].timestamp;
+            let status = recentSubmissions[0].status;
+            problemMapPlayer1[title] = status;
 
-            // Check if any player has completed all problems
-            for (var i = 0; i < NUM_USERS; i++) {
-                if (window.currentCorrectSubmissions[i].every(Boolean)) {
-                    handleGameOver();
-                    return;
-                }
+            updateUI(problemList, problemMapPlayer1, {});
+        }
+
+        if(message.action === "updateUI_send_1_rebound_3") {
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
             }
+
+            let problemMapPlayer2 = JSON.parse(localStorage.getItem("problemMapPlayer2"))
+            updateUI(problemList, {}, problemMapPlayer2);
         }
     });
+});
+
+// var intervalTimer = setInterval(async function() {
+  
     
-    if (numMinutes === 0 && numSeconds === 0) {
-        // Time's up - determine winner
-        handleGameOver();
-    } else {
-        //update timer display
-        document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
-    }
-}, 1000);
+//     if (numMinutes === 0 && numSeconds === 0) {
+//         // Time's up - determine winner
+//         handleGameOver();
+//     } else {
+//         //update timer display
+//         document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
+//     }
+// }, 1000);

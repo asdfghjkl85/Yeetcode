@@ -47,6 +47,8 @@ wss.on("connection", (ws) => {
         clients[gameId] = {};
       }
 
+      console.log("THIS IS MESSAGE", type, " AND THIS IS ", isPlayer1Api, )
+
     //game_created accepted_join_game player1_name  PLAYER2_JOINED GAME_STARTED  problems_sent
     if(isPlayer1Api === 'true') {
       clients[gameId].player1 = ws;
@@ -79,6 +81,13 @@ wss.on("connection", (ws) => {
       sendToPlayers(gameId, data, "player2");
     }
     
+    if(type === "updateUI_send_1_rebound") {
+      sendToPlayers(gameId, data, "player1");
+    }
+
+    if(type === "updateUI_send_2_rebound") {
+      sendToPlayers(gameId, data, "player2");
+    }
   });
 
   ws.on("close", () => {

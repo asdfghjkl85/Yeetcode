@@ -1,4 +1,3 @@
-import updateSubmission from "../../../Backend/utils/gameLoop.js";
 import { userRecentSubmissions } from "../api/graphql_apis.js";
 import { getNextTime, timeFormated, titleToSlug } from "./utils.js";
 
@@ -7,10 +6,10 @@ const NUM_USERS = 2;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
-// Function to count completed problems for a player
-function countCompletedProblems(playerIndex) {
-    return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
-}
+// let gameState = JSON.parse(localStorage.getItem("gameState"));
+var numMinutes = 10;
+var numSeconds = 0;
+
 
 // Function to determine winner and handle game over
 function handleGameOver() {
@@ -43,87 +42,120 @@ function handleGameOver() {
     }, 100);
 }
 
+function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
+    if(Object.keys(problemMapPlayer1).length > 0){
+        let checkForWinner = 0;
 
-async function startTimer(numMinutes, numSeconds) {
-    document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
-    // Initialize time from localStorage or default to 10 minutes
-    var intervalTimer = setInterval(async function() {
-        const nextTime = getNextTime(numMinutes, numSeconds);
-        numMinutes = nextTime[0];
-        numSeconds = nextTime[1];
-    
-        chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-            if (message.action === "triggerUserSubmissionAPICall") {
-                console.log("Clicked on submit button");
-                const problemList = window.PROBLEM_LIST;
-                const NUM_PROBLEMS = problemList.length;
-                let userList = [localStorage.getItem('Player1'), localStorage.getItem('Player2')];
-                console.log("Checking submissions for users:", userList);
-                let userToHash = new Map();  //assign each user a number
-                let problemToHash = new Map();  //assign each problem a number 
-                
-                for (var i = 0; i < NUM_USERS; i++) {
-                    userToHash.set(userList[i], i);
-                }
-                for (var i = 0; i < NUM_PROBLEMS; i++) {
-                    problemToHash.set(problemList[i], i);
-                }
-    
-                // Check if submission has changed
-                for (const PLAYER of userList) {
-                    try {
-                        const recentSubmissions = await userRecentSubmissions(PLAYER, 1);
-                        if (recentSubmissions && recentSubmissions.length > 0) {
-                            const title = titleToSlug(recentSubmissions[0].title);
-                            const timestamp = recentSubmissions[0].timestamp;
-                            const status = recentSubmissions[0].status;
-                            
-                            const playerIdx = userToHash.get(PLAYER);
-                            let titleIdx = null;
-                            if (problemToHash.has(title)) {
-                                titleIdx = problemToHash.get(title);
-                            }
-                            else {
-                                //edge case: current player solved a problem not on the sheet
-                                continue;
-                            }
-    
-                            const boxId = `player${playerIdx + 1}Box${titleIdx + 1}`;
-                            const box = document.getElementById(boxId);
-                            if (box) {
-                                if (status == "Accepted") {
-                                    window.currentCorrectSubmissions[playerIdx][titleIdx] = true;
-                                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
-                                }
-                                else {
-                                    box.innerHTML = '<img src="assets/images/xmark.png" alt="x" style="width: 30px; height: 30px;">';
-                                }
-                                console.log(`Updated UI for ${PLAYER}:`, window.currentCorrectSubmissions[playerIdx]);
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error checking submissions for ${PLAYER}:`, error);
-                    }
-                }
-    
-                // Check if any player has completed all problems
-                for (var i = 0; i < NUM_USERS; i++) {
-                    if (window.currentCorrectSubmissions[i].every(Boolean)) {
-                        handleGameOver();
-                        return;
-                    }
+        problemList.forEach((title, index) => {
+            const slug = titleToSlug(title); 
+            const status = problemMapPlayer1[slug];
+
+            const boxId = `player1Box${index+1}`;
+            const box = document.getElementById(boxId);
+
+            if(box && status) {
+                if(status === "Accepted") {
+                    box.textContent = "🟢";
+                    checkForWinner++;
+                } else if(status === "in_progress") {
+
+                } else{
+                    box.textContent = "❌"
                 }
             }
-        });
-        
-        if (numMinutes === 0 && numSeconds === 0) {
-            // Time's up - determine winner
-            handleGameOver();
+        })
+
+        if(checkForWinner === problemList.length) {
+            console.log("PLAYER 1 won!")
         } else {
-            //update timer display
-            document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
+            checkForWinner = 0;
         }
-    }, 1000);       
+    }
+
+    if(Object.keys(problemMapPlayer2).length > 0) {
+        let checkForWinner = 0;
+        problemList.forEach((title, index) => {
+
+            const slug = titleToSlug(title); 
+            const status = problemMapPlayer2[slug];
+
+            const boxId = `player2Box${index+1}`;
+            const box = document.getElementById(boxId);
+
+            if(box && status) {
+                if(status === "Accepted") {
+                    box.textContent = "🟢";
+                    checkForWinner++;
+                } else if(status === "in_progress") {
+
+                } else{
+                    box.textContent = "❌"
+                }
+            }
+        })
+
+        if(checkForWinner === problemList.length) {
+            console.log("PLAYER 2 won!")
+        } else {
+            checkForWinner = 0;
+        }
+
+        localStorage.setItem("problemMapPlayer2", JSON.stringify(problemMapPlayer2));
+        chrome.runtime.sendMessage({
+            action: "updateUI_send_1", 
+        });
+
+    }
 }
 
-export { startTimer };
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Initialize timer display with selected time
+    document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
+    // const nextTime = getNextTime(numMinutes, numSeconds);
+    const player1 = localStorage.getItem("player1");
+    const player2 = localStorage.getItem("player2");
+
+    let problemMapPlayer2 = {}
+    let problemList = []
+    // numMinutes = nextTime[0];
+    // numSeconds = nextTime[1];
+
+
+    //LISTEN FOR LIVE UPDATES.
+    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+        if (message.action === "triggerUserSubmissionAPICall") {
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
+            }
+
+            if(Object.keys(problemMapPlayer2).length === 0) {
+                for (let i = 0; i < problemList.length; i++) {
+                    let slug = titleToSlug(problemList[i]);
+                    problemMapPlayer2[slug] = "in_progress";
+                }
+            }
+            console.log("Clicked on submit button");
+            console.log("THIS IS PROBLEM LIST", problemList);
+            let recentSubmissions = await userRecentSubmissions(player1, 1);
+            let title = titleToSlug(recentSubmissions[0].title);
+            let timestamp = recentSubmissions[0].timestamp;
+            let status = recentSubmissions[0].status;
+            problemMapPlayer2[title] = status;
+
+            updateUI(problemList, {}, problemMapPlayer2);
+        }
+
+        if(message.action === "updateUI_send_2_rebound_3") {
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
+            }
+
+            let problemMapPlayer1 = JSON.parse(localStorage.getItem("problemMapPlayer1"));
+
+            updateUI(problemList, problemMapPlayer1, {});
+        }
+    });
+
+});
+
