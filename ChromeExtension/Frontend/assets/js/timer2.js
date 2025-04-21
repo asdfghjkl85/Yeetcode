@@ -7,9 +7,10 @@ const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
 // let gameState = JSON.parse(localStorage.getItem("gameState"));
-var numMinutes = 10;
-var numSeconds = 0;
 
+function countCompletedProblems(playerIndex) {
+    return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
+}
 
 // Function to determine winner and handle game over
 function handleGameOver() {

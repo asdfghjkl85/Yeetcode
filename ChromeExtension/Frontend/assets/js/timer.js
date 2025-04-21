@@ -12,6 +12,9 @@ var numSeconds = 0;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 
+function countCompletedProblems(playerIndex) {
+    return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
+}
 
 // Function to determine winner and handle game over
 function handleGameOver() {
@@ -164,14 +167,59 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// var intervalTimer = setInterval(async function() {
-  
+var intervalTimer = setInterval(async function() {
+    // Initialize timer display with selected time
+    document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
+    const nextTime = getNextTime(numMinutes, numSeconds);
+    const player1 = localStorage.getItem("player1");
+    const player2 = localStorage.getItem("player2");
+
+    let problemMapPlayer1 = {}
+    let problemList = []
+
+
+    numMinutes = nextTime[0];
+    numSeconds = nextTime[1];
+
+    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+
+        if (message.action === "triggerUserSubmissionAPICall") {
+
+            console.log("Clicked on submit button");
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
+            }
+
+            if(Object.keys(problemMapPlayer1).length  === 0) {
+                for (let i = 0; i < problemList.length; i++) {
+                    let slug = titleToSlug(problemList[i]);
+                    problemMapPlayer1[slug] = "in_progress";
+                }
+            }
+            let recentSubmissions = await userRecentSubmissions(player1, 1);
+            let title = titleToSlug(recentSubmissions[0].title);
+            let timestamp = recentSubmissions[0].timestamp;
+            let status = recentSubmissions[0].status;
+            problemMapPlayer1[title] = status;
+
+            updateUI(problemList, problemMapPlayer1, {});
+        }
+
+        if(message.action === "updateUI_send_1_rebound_3") {
+            if(problemList.length === 0) {
+                problemList = JSON.parse(localStorage.getItem("selectedProblems"))
+            }
+
+            let problemMapPlayer2 = JSON.parse(localStorage.getItem("problemMapPlayer2"))
+            updateUI(problemList, {}, problemMapPlayer2);
+        }
+    });
     
-//     if (numMinutes === 0 && numSeconds === 0) {
-//         // Time's up - determine winner
-//         handleGameOver();
-//     } else {
-//         //update timer display
-//         document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
-//     }
-// }, 1000);
+    if (numMinutes === 0 && numSeconds === 0) {
+        // Time's up - determine winner
+        handleGameOver();
+    } else {
+        //update timer display
+        document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
+    }
+}, 1000);
