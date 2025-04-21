@@ -89,39 +89,33 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
         }
     }
 
-    if(1===1){
-        // const parsedObj2 = JSON.parse(problemMapPlayer2); // now it's a plain object
-        // const mapPlayer2 = new Map(Object.entries(parsedObj2)); // now it's a Map
-        // problemMapPlayer2 = mapPlayer2;
+    let checkForWinner = 0;
+    //console.log(`brig: ${problemMapPlayer1}`);
+    for (var index=0; index<n; index++) {
+        const slug = String(problemList[index]);
+        let status = problemMapPlayer2[slug];
 
-        let checkForWinner = 0;
-        //console.log(`brig: ${problemMapPlayer1}`);
-        for (var index=0; index<n; index++) {
-            const slug = String(problemList[index]);
-            let status = problemMapPlayer2[slug];
+        console.log(`${slug} ---> ${status}`);
 
-            console.log(`${slug} ---> ${status}`);
+        const boxId = `player2Box${index+1}`;
+        const box = document.getElementById(boxId);
+        //console.log(`Here is the box: ${box}; for problem ${slug}, here is the status: ${status}`);
 
-            const boxId = `player2Box${index+1}`;
-            const box = document.getElementById(boxId);
-            //console.log(`Here is the box: ${box}; for problem ${slug}, here is the status: ${status}`);
+        if(box && status) {
+            if(status === "Accepted") {
+                box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';                    checkForWinner++;
+            } else if(status === "in_progress") {
 
-            if(box && status) {
-                if(status === "Accepted") {
-                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';                    checkForWinner++;
-                } else if(status === "in_progress") {
-
-                } else{
-                    box.textContent = "❌"
-                }
+            } else{
+                box.textContent = "❌"
             }
         }
+    }
 
-        if(checkForWinner === problemList.length) {
-            console.log("PLAYER 2 won!")
-        } else {
-            checkForWinner = 0;
-        }
+    if(checkForWinner === problemList.length) {
+        console.log("PLAYER 2 won!")
+    } else {
+        checkForWinner = 0;
     }
     //console.log(`this is on player2's screen: ${problemMapPlayer1}`);
     //console.log(`this is on player2's screen AGAIN: ${problemMapPlayer2}`);
