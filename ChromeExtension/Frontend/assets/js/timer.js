@@ -1,4 +1,3 @@
-import updateSubmission from "../../../Backend/utils/gameLoop.js";
 import { userRecentSubmissions } from "../api/graphql_apis.js";
 import { getNextTime, timeFormated, titleToSlug } from "./utils.js";
 
