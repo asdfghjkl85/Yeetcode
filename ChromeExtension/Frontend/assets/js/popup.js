@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmJoinButton = document.getElementById("confirm-join");
     let back_to_main_button = document.getElementById("back-to-main-screen");
     let back_to_main_button_from_join = document.getElementById("back-to-main-screen-from-join");
+    let profile_button = document.getElementById("profile-button");
+
+    if (profile_button) {
+        profile_button.addEventListener("click", function () {
+            window.location.href = "profile-screen.html";
+        });
+    }
 
     // Navigate back to main screen
     if (back_to_main_button) {
