@@ -63,7 +63,8 @@ function parsePossiblyDoubleEncodedMap(str) {
 }
 
 function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
-    if (typeof problemList === String) {
+    if (typeof problemList === 'string') {
+        console.log("hit it boys!");
         problemList = JSON.parse(problemList);
     }
     const n = problemList.length;
