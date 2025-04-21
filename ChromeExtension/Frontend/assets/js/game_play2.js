@@ -45,26 +45,8 @@ function handleGameOver() {
     }, 100);
 }
 
-function parsePossiblyDoubleEncodedMap(str) {
-    try {
-      // Attempt first parse
-      let parsed = JSON.parse(str);
-  
-      // If it's still a string, parse again
-      if (typeof parsed === 'string') {
-        parsed = JSON.parse(parsed);
-      }
-  
-      return new Map(Object.entries(parsed));
-    } catch (e) {
-      console.error("Failed to parse JSON:", str);
-      return null;
-    }
-}
-
 function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
     if (typeof problemList === 'string') {
-        console.log("hit it boys!");
         problemList = JSON.parse(problemList);
     }
     const n = problemList.length;
@@ -109,7 +91,6 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
     }
 
     if(1===1){
-        console.log("bru");
         // const parsedObj2 = JSON.parse(problemMapPlayer2); // now it's a plain object
         // const mapPlayer2 = new Map(Object.entries(parsedObj2)); // now it's a Map
         // problemMapPlayer2 = mapPlayer2;
@@ -296,12 +277,10 @@ async function startTimer() {
         let problemMapPlayer2 = {}
         let problemList = []
 
-        // Initialize timer display with selected time
-        document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
         const nextTime = getNextTime(numMinutes, numSeconds);
-    
         numMinutes = nextTime[0];
         numSeconds = nextTime[1];
+        document.getElementById("timerText").innerText = timeFormated(numMinutes, numSeconds);
 
         socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
@@ -327,12 +306,22 @@ async function startTimer() {
                         problemMapPlayer2[slug] = "in_progress";
                     }
                 }
-                let recentSubmissions = await userRecentSubmissions(player1, 1);
+                let recentSubmissions = await userRecentSubmissions(player2, 1);
                 let title = titleToSlug(recentSubmissions[0].title);
                 let timestamp = recentSubmissions[0].timestamp;
                 let status = recentSubmissions[0].status;
                 problemMapPlayer2[title] = status;
                 updateUI(problemList, {}, problemMapPlayer2);
+                console.log("about to try out sending message to screen1 from player2 submit");
+                console.log(`P2 map yuuuu: ${problemMapPlayer2}`);
+                let socketPayload = {
+                    type: "updateUI_send_1_rebound",
+                    problemMapPlayer2: problemMapPlayer2, 
+                    isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+                    isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+                    gameId: localStorage.getItem("gameId"),
+                };
+                socket.send(JSON.stringify(socketPayload));
             }
     
             if(message.action === "updateUI_send_1_rebound_3") {
@@ -342,6 +331,8 @@ async function startTimer() {
     
                 let problemMapPlayer2 = JSON.parse(localStorage.getItem("problemMapPlayer2"))
                 updateUI(problemList, {}, problemMapPlayer2);
+                console.log("333about to try out sending message to screen1 from player2 submit");
+                console.log(`P3332 map yuuuu: ${localStorage.getItem("problemMapPlayer2")}`);
             }
         });
 

@@ -47,6 +47,16 @@ function handleGameOver() {
     }, 100);
 }
 
+function objectToMap(obj) {
+    return new Map(Object.entries(obj));
+}  
+
+function logObject(obj) {
+    for (const [key, value] of Object.entries(obj)) {
+      console.log(`Key: ${key}, Value:`, value);
+    }
+}
+
 // Update UI with submission status
 function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
     if(Object.keys(problemMapPlayer1).length > 0){
@@ -85,6 +95,10 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
             action: "updateUI_send_2", 
         });
     }
+
+    //console.log(`This is player2's map: ${problemMapPlayer2}`);
+    console.log(objectToMap(problemMapPlayer2));
+    logObject(problemMapPlayer2);
 
     if(Object.keys(problemMapPlayer2).length > 0) {
         let checkForWinner = 0;
@@ -162,6 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             let problemMapPlayer2 = JSON.parse(localStorage.getItem("problemMapPlayer2"))
+
             updateUI(problemList, {}, problemMapPlayer2);
         }
     });
