@@ -71,7 +71,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
 
             if(box && status) {
                 if(status === "Accepted") {
-                    box.textContent = "🟢";
+                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
                     checkForWinner++;
                 } else if(status === "in_progress") {
 
@@ -112,7 +112,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
 
             if(box && status) {
                 if(status === "Accepted") {
-                    box.textContent = "🟢";
+                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
                     checkForWinner++;
                 } else if(status === "in_progress") {
 
