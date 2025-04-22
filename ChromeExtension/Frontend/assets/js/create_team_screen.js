@@ -4,8 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const inviteCodeElement = document.getElementById("inviteCode");
     const startGameSetupButton = document.getElementById("start-game-button-setup");
     const copyCodeButton = document.getElementById("copyCode");
+    const backButton = document.getElementById("back-to-main-screen");
 
     let socket = new WebSocket("ws://localhost:3000/ws");
+
+    // Add event listener for the back button
+    backButton.addEventListener("click", () => {
+        window.location.href = "main-screen.html";
+    });
 
     createGame(inviteCodeElement, startGameSetupButton, socket);
 

@@ -1,8 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const confirmJoinButton = document.getElementById("confirm-join");
+    const backButton = document.getElementById("back-to-main-screen-from-join");
     localStorage.setItem("isPlayer1Api", "false");
     localStorage.setItem("isPlayer2Api", "true");
     const socket = new WebSocket("ws://localhost:3000/ws");
+
+    // Add event listener for the back button
+    backButton.addEventListener("click", () => {
+        window.location.href = "main-screen.html";
+    });
 
     confirmJoinButton.addEventListener("click", () => {
         const invCode = document.getElementById("inviteCode").value.trim();

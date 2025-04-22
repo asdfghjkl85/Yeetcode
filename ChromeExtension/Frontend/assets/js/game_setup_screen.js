@@ -55,9 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.send(JSON.stringify({
         type: "connect",
         isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
-        isPlayer2Api: localStorage.getItem("isPlayer2Api"),
-        gameId: gameId
-    }))
+        isPlayer2Api: localStorage.getItem("isPlayer2Api")
+      }))
 }
 
 //SET THE GAME STATE
