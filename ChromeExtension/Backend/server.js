@@ -177,7 +177,7 @@ app.post('/api/validateUser', async (req, res) => {
 
 });
 
-const port = process.env.PORT || 300;
+const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
