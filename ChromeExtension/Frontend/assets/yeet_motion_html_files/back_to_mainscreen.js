@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the back button element
     const backButton = document.querySelector('.back-to-main');
     
-    // Add click event listener
+    // Apply styling for better visibility on dark background
     if (backButton) {
+        backButton.style.color = "#ffffff"; // White text
+        
+        // Add click event listener
         backButton.addEventListener('click', function() {
             // Navigate back to main screen
             window.location.href = '../../main-screen.html';

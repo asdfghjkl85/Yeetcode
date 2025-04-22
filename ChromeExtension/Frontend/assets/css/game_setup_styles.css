@@ -7,7 +7,8 @@
   
   body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    background-color: #f7f8fa;
+    background-color: #1B1B1B; /* Darker color for background */
+    color: #e6e6e6; /* Light text for readability */
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -21,10 +22,10 @@
   }
   
   .game-setup-card {
-    background-color: white;
+    background-color: #312F2F; /* Lighter color for component containers */
     border-radius: 1.2rem;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1),
-                0 4px 6px -2px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3),
+                0 4px 6px -2px rgba(0,0,0,0.15);
     padding: 1.5rem;
   }
   
@@ -50,11 +51,11 @@
   /* Difficulty selector */
   .difficulty-selector {
     display: flex;
-    background-color: #f2f2f2;
+    background-color: #1B1B1B; /* Darker color for background */
     border-radius: 9999px;
     padding: 0.25rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-                0 2px 4px -1px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2),
+                0 2px 4px -1px rgba(0,0,0,0.1);
   }
   
   .difficulty-btn {
@@ -87,11 +88,11 @@
   .ios-picker-container {
     position: relative;
     height: 150px;
-    background-color: #f2f2f2;
+    background-color: #1B1B1B; /* Darker color for background */
     border-radius: 1.2rem;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-                0 2px 4px -1px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2),
+                0 2px 4px -1px rgba(0,0,0,0.1);
   }
   
   /* Selection Indicator (semi-transparent) */
@@ -102,7 +103,7 @@
     top: 50%;
     transform: translateY(-50%);
     height: 35px;
-    background-color: rgba(217,217,217,0.4);
+    background-color: rgba(49, 47, 47, 0.4); /* Semi-transparent lighter color */
     z-index: 3;
   }
   
@@ -151,7 +152,7 @@
     height: 35px;
     font-size: 1rem;
     scroll-snap-align: center;
-    color: #000;
+    color: #ffffff;
   }
   
   .gradient-top {
@@ -160,7 +161,7 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: linear-gradient(to bottom, #f2f2f2, transparent);
+    background: linear-gradient(to bottom, #1B1B1B, transparent); /* Match the picker background */
     pointer-events: none;
     z-index: 1;
   }
@@ -171,7 +172,7 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: linear-gradient(to top, #f2f2f2, transparent);
+    background: linear-gradient(to top, #1B1B1B, transparent); /* Match the picker background */
     pointer-events: none;
     z-index: 1;
   }
@@ -179,11 +180,11 @@
   /* Battle Type selector */
   .battle-type-selector {
     display: flex;
-    background-color: #f2f2f2;
+    background-color: #1B1B1B; /* Darker color for background */
     border-radius: 9999px;
     padding: 0.25rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-                0 2px 4px -1px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2),
+                0 2px 4px -1px rgba(0,0,0,0.1);
   }
   
   .battle-type-btn {
@@ -196,11 +197,12 @@
     background: none;
     border: none;
     cursor: pointer;
+    color: #e6e6e6;
   }
   
   .battle-type-btn.active {
-    background-color: white;
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    background-color: #312F2F; /* Lighter color for component containers */
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2);
   }
   
   /* Start Button */

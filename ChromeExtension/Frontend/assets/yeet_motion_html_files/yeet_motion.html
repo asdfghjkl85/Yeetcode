@@ -10,10 +10,10 @@
             height: 350px;
             font-family: 'Arial', sans-serif;
             text-align: center;
-            background-color: #eef2ff;
+            background-color: #1B1B1B; /* Darker color for background */
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .container {
@@ -24,6 +24,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #ffffff; /* Ensure text is white */
         }
 
         /* Style for the emoji */
@@ -31,6 +32,7 @@
             position: absolute;
             left: 20%; /* Position the emoji 20% from the left */
             transform: translateY(-50%);
+            color: #ffffff; /* White color for better visibility */
             animation: rotateEmoji 2s ease-in-out forwards; /* Rotate animation */
         }
 
@@ -40,6 +42,7 @@
             top: 49.5%;
             left: 22%; /* Position the text 22% from the left (right of the emoji) */
             font-size: 20px;
+            color: #ffffff; /* White text for visibility */
             animation: throw 2s ease-in-out forwards; /* Throw animation */
         }
 
@@ -50,7 +53,7 @@
             left: 18%; /* Position to the left of the emoji */
             font-size: 24px;
             font-weight: bold;
-            color: #161414; /* Red color */
+            color: #ffffff; /* Changed to white for better visibility */
             opacity: 0; /* Initially hidden */
             animation: yeetFade 1s ease-in-out 1s forwards; /* Fade in and out animation with delay */
         }

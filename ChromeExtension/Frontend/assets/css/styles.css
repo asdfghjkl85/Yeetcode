@@ -1,6 +1,7 @@
 /* General Styles */
 body {
-    background-color: #f7f8fa;
+    background-color: #1B1B1B; /* Darker color for background */
+    color: #e6e6e6; /* Light text for dark background */
 }
 
 .outer-border {
@@ -8,10 +9,10 @@ body {
     height: 350px;
     font-family: 'Arial', sans-serif;
     text-align: center;
-    background-color: #f7f8fa;
+    background-color: #312F2F; /* Lighter color for component containers */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Logo */
@@ -44,10 +45,10 @@ body {
 /* Screens */
 .screen {
     display: none;
-    background: white;
+    background: #312F2F; /* Lighter color for component containers */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Active Screen */
@@ -61,7 +62,9 @@ input {
     padding: 8px;
     margin: 10px 0;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #555;
+    background-color: #1B1B1B; /* Darker color for input backgrounds */
+    color: #e6e6e6;
 }
 
 /* Highlighted Text */
@@ -79,6 +82,7 @@ input {
     position: absolute;
     top: 10px;
     left: 10px;
+    color: #ffffff; /* Changed to white for better visibility */
 }
 
 /* Invite Code */
@@ -128,7 +132,7 @@ input {
     align-items: center;
     padding: 10px;
     background-color: #eab764;
-    color: white;
+    color: #222;
     border-radius: 10px 10px 10px 10px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-radius 0.3s ease;
@@ -146,15 +150,16 @@ input {
 #toggle-note-button {
     font-size: 12px;
     transition: transform 0.3s ease;
+    color: #222; /* Dark color for contrast with the gold background */
 }
 
 #note-content {
     height: 0;
     overflow: hidden;
     transition: height 0.3s ease;
-    background-color: white;
+    background-color: #312F2F; /* Lighter color for component containers */
     border-radius: 0 0 10px 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Style for the note textarea */
@@ -175,7 +180,7 @@ input {
     font-size: 14px; /* Adjust as needed */
     line-height: 1.6; /* Adds space between lines */
     padding: 15px; /* Adds padding inside the note content */
-    color: #333; /* Darker text for better contrast */
+    color: #ccc; /* Lighter text for better contrast on dark background */
 }
 
 /* Expanding the note section dynamically (JS sets the height) */
