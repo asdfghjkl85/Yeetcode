@@ -3,6 +3,23 @@ body {
     color: #e6e6e6; /* Light text for dark background */
 }
 
+/* Logo styling */
+img.logo {
+    width: 55%; /* Increased width */
+    max-width: 180px;
+    height: auto; /* Maintain aspect ratio */
+    min-height: 100px; /* Ensure minimum height */
+    object-fit: contain; /* Ensure image isn't distorted */
+    margin-bottom: 20px; /* Increased margin for better spacing */
+    margin-top: 10px; /* Add margin to the top */
+    transition: transform 0.3s ease;
+}
+
+img.logo:hover {
+    transform: scale(1.05); /* Subtle grow effect on hover */
+}
+
+/* Default image styling */
 img {
     width: 32%;
 }

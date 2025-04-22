@@ -52,24 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
             startGameSetupButton.disabled = false;
             startGameSetupButton.style.backgroundColor = "#eab764";
             startGameSetupButton.style.cursor = "default";
-    
-            // Create container if not present
-            let player2Container = document.getElementById("player2-container");
-            if (player2Container) {
-                player2Container.id = "player2-container";
-                document.getElementById("create-team-screen").appendChild(player2Container);
+            
+            let waitingMsg = document.getElementById("waitingMsg");
+            if (waitingMsg) {
+                waitingMsg.textContent = "Player 2 has joined the game!";
             }
 
-            let player2Input = document.getElementById("player2Name");
-            if (player2Input) {
-                player2Input.id = "player2Name";
-                player2Input.disabled = true;
-                player2Container.appendChild(player2Input);
-            }
-
-
-            // Update the value
-            player2Input.value = data.player2 || "Player2";
             
             // Let Player 2 know they're accepted
             socket.send(JSON.stringify({
