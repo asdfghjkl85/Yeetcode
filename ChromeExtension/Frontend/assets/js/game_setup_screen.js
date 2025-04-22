@@ -185,4 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Add profile button click handler
+  const profileButton = document.getElementById('profile-btn');
+  if (profileButton) {
+    profileButton.addEventListener('click', function() {
+      window.location.href = 'profile-screen.html';
+    });
+  }
 });
