@@ -35,8 +35,7 @@ function handleGameOver() {
         loser = window.PLAYER1;
     } else {
         // Tie - use time as tiebreaker
-        winner = window.PLAYER1;
-        loser = window.PLAYER2;
+        window.location.href = gameOverPage2;
     }
     
     // Store loser's name for the animation

@@ -7,6 +7,7 @@ const gameId = localStorage.getItem("gameId");
 const socket = new WebSocket("ws://localhost:3000/ws");
 const NUM_USERS = 2;
 const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
+const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
 let selectedProblems = [];
 let selectedProblemCount;
 let score = [0, 0];
@@ -31,15 +32,14 @@ function handleGameOver() {
     // Determine winner
     let winner, loser;
     if (player1Score > player2Score) {
-        winner = localStorage.getItem('Player1');
-        loser = localStorage.getItem('Player2');
+        winner = window.PLAYER1;
+        loser = window.PLAYER2;
     } else if (player2Score > player1Score) {
-        winner = localStorage.getItem('Player2');
-        loser = localStorage.getItem('Player1');
+        winner = window.PLAYER2;
+        loser = window.PLAYER1;
     } else {
         // Tie - use time as tiebreaker
-        winner = localStorage.getItem('Player1');
-        loser = localStorage.getItem('Player2');
+        window.location.href = gameOverPage2;
     }
     
     // Store loser's name for the animation
