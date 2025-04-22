@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/auth/signin", {
+            const response = await fetch("https://yeetcode-81k4.onrender.com/api/auth/signin", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

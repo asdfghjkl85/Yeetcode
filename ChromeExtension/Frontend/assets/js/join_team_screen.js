@@ -3,7 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.getElementById("back-to-main-screen-from-join");
     localStorage.setItem("isPlayer1Api", "false");
     localStorage.setItem("isPlayer2Api", "true");
-    const socket = new WebSocket("ws://localhost:3000/ws");
+    
+    // Initialize backend and WebSocket connection
+    const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+    const socket = new WebSocket(BACKEND_API.replace(/^http/, "ws") + "/ws");
+    
+    // Log WebSocket connection status for debugging
+    socket.addEventListener('open', (event) => {
+        console.log("WebSocket connection established successfully");
+    });
+
+    socket.addEventListener('error', (event) => {
+        console.error("WebSocket connection error:", event);
+    });
 
     // Add event listener for the back button
     backButton.addEventListener("click", () => {
@@ -16,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("This is the invite code:", invCode);
 
-        fetch("http://localhost:3000/api/games/join", {
+        fetch("https://yeetcode-81k4.onrender.com/api/games/join", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ invitation_code: invCode, username: player2Name })
@@ -29,15 +41,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("player2", player2Name);
                 localStorage.setItem("gameId", data._id);
                 localStorage.setItem("inviteCode", invCode);
-                socket.send(JSON.stringify({ 
+                
+                // Prepare the message to send
+                const message = JSON.stringify({ 
                     type: "PLAYER2_JOINED_send_1", 
                     gameId: data._id, 
-                    inviteCode: invCode, // use inviteCode
+                    inviteCode: invCode,
                     player2: player2Name,
                     isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
                     isPlayer2Api: localStorage.getItem("isPlayer2Api"),
                     player2: localStorage.getItem("player2")
-                }));
+                });
+                
+                // Check WebSocket state before sending
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(message);
+                } else {
+                    // If socket isn't open yet, wait for it
+                    socket.addEventListener('open', function() {
+                        socket.send(message);
+                    });
+                }
+                
                 console.log("Player 2 joined, polling for game start...");
             }
         })
