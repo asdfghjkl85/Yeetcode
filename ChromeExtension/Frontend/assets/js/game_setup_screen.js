@@ -1,6 +1,6 @@
 // Define the options for the pickers
 const problemOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const timeOptions = [5, 10, 15, 20, 30, 60];
+const timeOptions = [1, 5, 10, 15, 20, 30, 60];
 
 // Function to dynamically generate picker items
 function generatePickerItems(pickerId, options, formatFn = (val) => val) {
@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.send(JSON.stringify({
         type: "connect",
         isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
-        isPlayer2Api: localStorage.getItem("isPlayer2Api")
+        isPlayer2Api: localStorage.getItem("isPlayer2Api"),
+        gameId: gameId
     }))
 }
 
@@ -132,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         localStorage.setItem("gameState", JSON.stringify(gameState));
         const gameId = localStorage.getItem("gameId");
-        const player1 = localStorage.getItem("Player1");
+        const player1 = localStorage.getItem("player1");
         // Update game status and settings on the backend
         await fetch(`http://localhost:3000/api/games/${gameId}/status`, {
           method: "PATCH",
