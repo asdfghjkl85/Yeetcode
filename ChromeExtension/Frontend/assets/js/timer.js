@@ -3,13 +3,17 @@ import { getNextTime, timeFormated, titleToSlug } from "./utils.js";
 
 const NUM_USERS = 2;
 let gameState = JSON.parse(localStorage.getItem("gameState"));
-
+let score = [0,0];
+let yellowBoxes1 = new Set()
+let yellowBoxes2 = new Set()
 // Initialize time from localStorage or default to 10 minutes
 var numMinutes = gameState.timeLimit|| 10;
 var numSeconds = 0;
 
-const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
+var gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
+const gameOverPageWin = "game-over-win.html";
+const gameOverPageLose = "game-over-lose.html";
 
 function countCompletedProblems(playerIndex) {
     return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
@@ -17,23 +21,25 @@ function countCompletedProblems(playerIndex) {
 
 // Function to determine winner and handle game over
 function handleGameOver() {
-    const player1Completed = countCompletedProblems(0);
-    const player2Completed = countCompletedProblems(1);
+    // Use the score variable instead of counting completed problems
+    const player1Score = score[0];
+    const player2Score = score[1];
     
-    console.log(`Player 1 completed: ${player1Completed}, Player 2 completed: ${player2Completed}`);
+    console.log(`Player 1 score: ${player1Score}, Player 2 score: ${player2Score}`);
     
     // Determine winner
     let winner, loser;
-    if (player1Completed > player2Completed) {
+    if (player1Score > player2Score) {
         winner = window.PLAYER1;
         loser = window.PLAYER2;
-    } else if (player2Completed > player1Completed) {
+        gameOverPage = gameOverPageWin;
+    } else if (player2Score > player1Score) {
         winner = window.PLAYER2;
         loser = window.PLAYER1;
+        gameOverPage = gameOverPageLose;
     } else {
         // Tie - use time as tiebreaker
-        winner = window.PLAYER1;
-        loser = window.PLAYER2;
+        window.location.href = gameOverPage2;
     }
     
     // Store loser's name for the animation
@@ -72,6 +78,25 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
                 if(status === "Accepted") {
                     box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
                     checkForWinner++;
+
+                    if(!(yellowBoxes1.has(boxId))) {
+                        yellowBoxes1.add(boxId);
+                        score[0]++;
+                        document.getElementById("player1-score").innerText = score[0];
+                        
+                        // Check if player 1 has won
+                        if (score[0] >= problemList.length) {
+                            console.log("PLAYER 1 won by completing all problems!");
+                            // Set player 2 as loser for the animation
+                            localStorage.setItem("loserName", window.PLAYER2);
+                            // Redirect to game over page
+                            setTimeout(() => {
+                                window.location.href = gameOverPage;
+                            }, 100);
+                            return;
+                        }
+                    }
+
                 } else if(status === "in_progress") {
 
                 } else{
@@ -80,12 +105,6 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
             }
             
         })
-
-        if(checkForWinner === problemList.length) {
-            console.log("PLAYER 1 won!")
-        } else {
-            checkForWinner = 0;
-        }
 
         localStorage.setItem("problemMapPlayer1", JSON.stringify(problemMapPlayer1));
 
@@ -109,10 +128,28 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
             const boxId = `player2Box${index+1}`;
             const box = document.getElementById(boxId);
 
+            
             if(box && status) {
                 if(status === "Accepted") {
                     box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
                     checkForWinner++;
+                    if(!(yellowBoxes2.has(boxId))) {
+                        yellowBoxes2.add(boxId);
+                        score[1]++;
+                        document.getElementById("player2-score").innerText = score[1];
+                        
+                        // Check if player 2 has won
+                        if (score[1] >= problemList.length) {
+                            console.log("PLAYER 2 won by completing all problems!");
+                            // Set player 1 as loser for the animation
+                            localStorage.setItem("loserName", window.PLAYER1);
+                            // Redirect to game over page
+                            setTimeout(() => {
+                                window.location.href = gameOverPage;
+                            }, 100);
+                            return;
+                        }
+                    }
                 } else if(status === "in_progress") {
 
                 } else{
@@ -120,13 +157,6 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
                 }
             }
         })
-        
-        if(checkForWinner === problemList.length) {
-            console.log("PLAYER 2 won!")
-        } else {
-            checkForWinner = 0;
-        }
-    
     }
 }
 
