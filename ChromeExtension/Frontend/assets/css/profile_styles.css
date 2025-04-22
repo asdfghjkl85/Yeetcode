@@ -2,7 +2,30 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 10px;
+    box-sizing: border-box;
+}
+
+/* Adjust outer-border for profile screen */
+#profile-screen.screen {
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* Override the fixed height for the profile page */
+.outer-border.profile-container {
+    height: auto;
+    min-height: 450px;
+    overflow: visible;
+    margin-bottom: 30px;
+}
+
+/* Remove the general .outer-border override */
+.outer-border {
+    height: auto;
+    min-height: 450px;
+    overflow: visible;
 }
 
 .info-item {
@@ -65,6 +88,11 @@
     letter-spacing: 2px;
 }
 
+#profile-screen h1 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
 #back-button, #save-profile {
     display: block;
     width: 200px;
@@ -80,7 +108,7 @@
 #save-profile {
     background-color: #4CAF50;
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 #save-profile:hover {
@@ -90,6 +118,8 @@
 #back-button {
     background-color: #f0c14b;
     color: #111;
+    margin-top: 5px;
+    margin-bottom: 20px;
 }
 
 #back-button:hover {

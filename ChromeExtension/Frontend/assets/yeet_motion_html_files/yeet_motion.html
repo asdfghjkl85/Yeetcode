@@ -55,6 +55,34 @@
             animation: yeetFade 1s ease-in-out 1s forwards; /* Fade in and out animation with delay */
         }
 
+        /* Back button styles */
+        .back-to-main {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #eab764;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out 2.5s forwards; /* Appear after animations */
+        }
+
+        .back-to-main:hover {
+            background-color: #d9a656;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         /* Keyframes for the emoji rotation */
         @keyframes rotateEmoji {
             0% {
@@ -106,7 +134,9 @@
         <div class="emoji">( っ'-')╮</div>
         <div id="loser-text" class="text"></div>
         <div class="yeet">Yeet!</div>
+        <button class="back-to-main">Back to Main</button>
     </div>
     <script src="yeet_motion.js"></script>
+    <script src="back_to_mainscreen.js"></script>
 </body>
 </html>

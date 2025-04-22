@@ -64,6 +64,34 @@
             opacity: 1; /* Keep text visible */
         }
 
+        /* Back button styles */
+        .back-to-main {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #eab764;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out 2.5s forwards; /* Appear after animations */
+        }
+
+        .back-to-main:hover {
+            background-color: #d9a656;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         /* Keyframes for the emoji ripping motion */
         @keyframes ripMove {
             0% {
@@ -123,8 +151,10 @@
         <div class="emoji"></div> <!-- Emoji that changes -->
         <div class="text-left">o<-</div> <!-- Left part of the text -->
         <div class="text-right"><</div> <!-- Right part of the text -->
+        <button class="back-to-main">Back to Main</button>
         <!-- Need to add JS file to split the loser username and -->
         <!-- VERY NOTABLE CHANGE FOR GIT TESTING -->
     </div>
+    <script src="back_to_mainscreen.js"></script>
 </body>
 </html>

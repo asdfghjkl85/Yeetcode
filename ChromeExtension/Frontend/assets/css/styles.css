@@ -188,3 +188,14 @@ input {
 #toggle-note-checkbox:checked ~ #note-header #toggle-note-button {
     transform: rotate(180deg);
 }
+
+/* Custom style for profile button in main screen */
+#profile-button {
+    margin-top: 40px;
+    position: relative;
+    bottom: 0;
+    width: 120px; /* Set a specific width */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
