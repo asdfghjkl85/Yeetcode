@@ -31,10 +31,18 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Login response:", data); // Debug log
 
             if (response.ok) {
-                // Store user data in chrome storage
+                //make api calls
+                const elo = "1501";
+                const title = "Pupil";
+                const bio = "";
+                const uni = "";
                 localStorage.clear();
                 localStorage.setItem("leetcode_username", data.leetcode_username);
                 localStorage.setItem("yeetcode_username", yeetcode_username);
+                localStorage.setItem("elo", elo);
+                localStorage.setItem("title", title);
+                localStorage.setItem("bio", bio);
+                localStorage.setItem("university", uni);
                 window.location.href = "main-screen.html";
             } else {
                 alert(data.message || "Login failed. Please check your credentials.");
