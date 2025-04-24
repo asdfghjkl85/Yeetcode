@@ -9,8 +9,6 @@ const player2Name = localStorage.getItem("player2") || "Player 2";
 const gameId = localStorage.getItem("gameId");
 const battleType = gameState.battleType || "unknown"
 
-
-
 // Track selected problems for submission checking
 let selectedProblems = [];
 
@@ -67,18 +65,31 @@ async function initializeGameTable(socket) {
     .slice(0, selectedProblemCount);
     console.log('HEREE IS THE GAME ID::', gameId);
     console.log(`Selected ${selectedProblems.length} problems out of ${problems.length} available`);
-    await sendGameProblems(selectedProblems, gameId)
+    await sendGameProblems(selectedProblems, gameId);
 
     localStorage.setItem("selectedProblems", JSON.stringify(selectedProblems));
 
-    socket.send(JSON.stringify({
+    // Prepare the message to send
+    const message = JSON.stringify({
         type: "problems_sent_send_2",
         isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
         isPlayer2Api: localStorage.getItem("isPlayer2Api"),
         gameState: JSON.parse(localStorage.getItem("gameState")),
         selectedProblems: JSON.parse(localStorage.getItem("selectedProblems")),
         gameId: gameId
-    }));
+    });
+
+    // Check WebSocket state before sending
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+    } else {
+        console.log("WebSocket not ready, waiting for connection...");
+        // If socket isn't open yet, wait for it
+        socket.addEventListener('open', function() {
+            console.log("WebSocket now open, sending problems");
+            socket.send(message);
+        });
+    }
 
     // Clear existing rows
     tableBody.innerHTML = '';
@@ -113,19 +124,36 @@ async function initializeGameTable(socket) {
 
 // Initialize game when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    let socket = new WebSocket("ws://localhost:3000/ws");
-    socket.onopen = () => {
+    const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+    const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
+    
+    // Log WebSocket connection status for debugging
+    socket.addEventListener('open', (event) => {
+        console.log("WebSocket connection established successfully");
         socket.send(JSON.stringify({
             type: "connect",
             isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
             isPlayer2Api: localStorage.getItem("isPlayer2Api"),
             gameId: gameId
-        }))
-    }
-    console.log(`Starting game with ${selectedProblemCount} problems`);
-    initializeGameTable(socket);
+        }));
+    });
 
-    //Listen for UI updtes
+    socket.addEventListener('error', (event) => {
+        console.error("WebSocket connection error:", event);
+    });
+    
+    console.log(`Starting game with ${selectedProblemCount} problems`);
+    
+    // Initialize game table when socket is ready or when the connection is established
+    if (socket.readyState === WebSocket.OPEN) {
+        initializeGameTable(socket);
+    } else {
+        socket.addEventListener('open', () => {
+            initializeGameTable(socket);
+        });
+    }
+
+    //Listen for UI updates
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if(data.type === "updateUI_send_1_rebound") {
@@ -137,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }   
 
     //Send UI updates
-
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if(request.action === "updateUI_send_2_rebound") {
             console.log("WE GOT HERE MESSAGE Sent")
@@ -149,7 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameId: localStorage.getItem("gameId"),
             };
             
-            socket.send(JSON.stringify(socketPayload));
+            // Check WebSocket state before sending
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(socketPayload));
+            } else {
+                console.error("WebSocket not ready, cannot send UI update");
+            }
         }
     })
 }); 

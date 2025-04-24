@@ -1,0 +1,269 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background-color: #1B1B1B; /* Darker color for background */
+    color: #e6e6e6; /* Light text for dark background */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make the outer container larger to fit the text properly */
+.outer-border {
+    width: 350px; /* Increased from 300px to 350px */
+    height: auto; /* Changed to auto height to accommodate content */
+    min-height: 500px; /* Set minimum height */
+    padding: 20px;
+    background-color: #312F2F; /* Lighter color for component containers */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: visible; /* Allow content to be visible */
+}
+
+.container {
+    width: 100%;
+    max-width: 20rem;
+    padding: 1rem;
+}
+
+.game-over-card {
+    background-color: #312F2F; /* Lighter color for component containers */
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+}
+
+.game-over-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 10px; /* Reduced padding to give more space to content */
+    text-align: center;
+}
+
+.players-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.player {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff; /* Changed to white for better visibility */
+}
+
+.vs-image {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff4444;
+    position: relative;
+    background-image: url('../images/vs.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0; /* Reduced margin to save space */
+    color: #ffffff;
+    animation: popIn 0.5s ease-out;
+    width: 100%; /* Ensure text can take full width */
+    padding: 0 10px; /* Add some padding on the sides */
+}
+
+.victory-text, .defeat-text {
+    font-size: 1.5rem; /* Reduced from 1.8rem to fit better */
+    margin-bottom: 1rem; /* Reduced from 2rem to save space */
+    color: #ffffff;
+    animation: slideIn 0.5s ease-out;
+    width: 100%; /* Ensure text can take full width */
+    padding: 0 10px; /* Add some padding on the sides */
+    word-wrap: break-word; /* Ensure long words wrap */
+}
+
+.result-image {
+    width: 250px; /* Reduced from 300px to save space */
+    height: 250px; /* Reduced from 300px to save space */
+    margin: 1rem 0; /* Reduced from 2rem to save space */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.victory-animation, .defeat-animation {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.logo-container {
+    margin: 2rem 0;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+}
+
+#back-button {
+    background-color: #eab764; /* Gold background to match theme */
+    color: #222; /* Dark text for contrast */
+    padding: 12px 50px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+#back-button:hover {
+    background-color: #d9a656; /* Darker gold on hover */
+}
+
+/* Animation for the result text */
+.result-text {
+    animation: popIn 0.5s ease-out;
+}
+
+.victory-text, .defeat-text {
+    animation: slideIn 0.5s ease-out;
+}
+
+.result-image {
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .players-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .result-text {
+        font-size: 2rem;
+    }
+
+    .victory-text, .defeat-text {
+        font-size: 1.5rem;
+    }
+
+    .result-image {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #1B1B1B; /* Darker color for background */
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.scores-table th,
+.scores-table td {
+    padding: 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #555; /* Updated to darker border */
+}
+
+.scores-table th {
+    background-color: #1B1B1B; /* Darker color for background */
+    font-weight: 600;
+}
+
+.player-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #1B1B1B; /* Darker color for background */
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    background-color: #1B1B1B; /* Darker color for background */
+    color: #e6e6e6; /* Light text color */
+} 

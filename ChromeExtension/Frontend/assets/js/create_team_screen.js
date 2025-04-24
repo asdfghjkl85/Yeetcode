@@ -4,10 +4,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const inviteCodeElement = document.getElementById("inviteCode");
     const startGameSetupButton = document.getElementById("start-game-button-setup");
     const copyCodeButton = document.getElementById("copyCode");
+    const backButton = document.getElementById("back-to-main-screen");
 
-    let socket = new WebSocket("ws://localhost:3000/ws");
+    // Initialize backend and WebSocket connection
+    const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+    const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
 
-    createGame(inviteCodeElement, startGameSetupButton, socket);
+    // Log WebSocket connection status for debugging
+    socket.addEventListener('open', (event) => {
+        console.log("WebSocket connection established successfully");
+    });
+
+    socket.addEventListener('error', (event) => {
+        console.error("WebSocket connection error:", event);
+    });
+
+    // Add event listener for the back button
+    backButton.addEventListener("click", () => {
+        window.location.href = "main-screen.html";
+    });
+
+    // Only create game when socket is ready or add a listener to create it when ready
+    if (socket.readyState === WebSocket.OPEN) {
+        createGame(inviteCodeElement, startGameSetupButton, socket);
+    } else {
+        socket.addEventListener('open', () => {
+            createGame(inviteCodeElement, startGameSetupButton, socket);
+        });
+    }
 
     if (copyCodeButton) {
         copyCodeButton.addEventListener("click", () => {
@@ -28,24 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
             startGameSetupButton.disabled = false;
             startGameSetupButton.style.backgroundColor = "#eab764";
             startGameSetupButton.style.cursor = "default";
-    
-            // Create container if not present
-            let player2Container = document.getElementById("player2-container");
-            if (player2Container) {
-                player2Container.id = "player2-container";
-                document.getElementById("create-team-screen").appendChild(player2Container);
+            
+            let waitingMsg = document.getElementById("waitingMsg");
+            if (waitingMsg) {
+                waitingMsg.textContent = "Player 2 has joined the game!";
             }
 
-            let player2Input = document.getElementById("player2Name");
-            if (player2Input) {
-                player2Input.id = "player2Name";
-                player2Input.disabled = true;
-                player2Container.appendChild(player2Input);
-            }
-
-
-            // Update the value
-            player2Input.value = data.player2 || "Player2";
             
             // Let Player 2 know they're accepted
             socket.send(JSON.stringify({
@@ -90,7 +102,7 @@ function createGame(inviteCodeElement, startGameSetupButton, socket) {
         startGameSetupButton.style.cursor = "not-allowed";
     }
 
-    fetch("http://localhost:3000/api/games", {
+    fetch("https://yeetcode-81k4.onrender.com/api/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invitation_code: invCode, username: null })
@@ -99,8 +111,29 @@ function createGame(inviteCodeElement, startGameSetupButton, socket) {
     .then(data => {
         const gameId = data._id;
         localStorage.setItem("gameId", gameId);
-        socket.send(JSON.stringify({ type: "connect", gameId: gameId, inviteCode: invCode, 
-            isPlayer1Api: localStorage.getItem("isPlayer1Api"), isPlayer2Api: localStorage.getItem("isPlayer2Api") }));
+        
+        // Check if WebSocket is ready before sending message
+        if (socket.readyState === WebSocket.OPEN) {
+            // WebSocket is open, safe to send
+            socket.send(JSON.stringify({ 
+                type: "connect", 
+                gameId: gameId, 
+                inviteCode: invCode, 
+                isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+                isPlayer2Api: localStorage.getItem("isPlayer2Api") 
+            }));
+        } else {
+            // WebSocket not ready yet, wait for it to open
+            socket.addEventListener('open', function() {
+                socket.send(JSON.stringify({ 
+                    type: "connect", 
+                    gameId: gameId, 
+                    inviteCode: invCode, 
+                    isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+                    isPlayer2Api: localStorage.getItem("isPlayer2Api") 
+                }));
+            });
+        }
     })
     .catch(error => console.error("Error creating game:", error));
 }

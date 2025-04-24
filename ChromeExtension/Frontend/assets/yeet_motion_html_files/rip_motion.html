@@ -10,10 +10,10 @@
             height: 350px;
             font-family: 'Arial', sans-serif;
             text-align: center;
-            background-color: #eef2ff;
+            background-color: #1B1B1B; /* Darker color for background */
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -25,6 +25,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #ffffff; /* Ensure text is white */
         }
 
         /* Emoji for the ripping action */
@@ -35,6 +36,7 @@
             transform: translateX(-50%);
             font-size: 35px; /* Smaller emoji size */
             animation: ripMove 2s ease-in-out forwards;
+            color: #ffffff; /* White color for better visibility */
         }
 
         .emoji::after {
@@ -51,6 +53,7 @@
             transform-origin: right center;
             animation: ripLeft 2s ease-in-out forwards;
             opacity: 1; /* Keep text visible */
+            color: #ffffff; /* White text for better visibility */
         }
 
         /* Right part of the text that will be ripped */
@@ -62,6 +65,35 @@
             transform-origin: left center;
             animation: ripRight 2s ease-in-out forwards;
             opacity: 1; /* Keep text visible */
+            color: #ffffff; /* White text for better visibility */
+        }
+
+        /* Back button styles */
+        .back-to-main {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #eab764;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out 2.5s forwards; /* Appear after animations */
+        }
+
+        .back-to-main:hover {
+            background-color: #d9a656;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* Keyframes for the emoji ripping motion */
@@ -123,8 +155,10 @@
         <div class="emoji"></div> <!-- Emoji that changes -->
         <div class="text-left">o<-</div> <!-- Left part of the text -->
         <div class="text-right"><</div> <!-- Right part of the text -->
+        <button class="back-to-main">Back to Main</button>
         <!-- Need to add JS file to split the loser username and -->
         <!-- VERY NOTABLE CHANGE FOR GIT TESTING -->
     </div>
+    <script src="back_to_mainscreen.js"></script>
 </body>
 </html>

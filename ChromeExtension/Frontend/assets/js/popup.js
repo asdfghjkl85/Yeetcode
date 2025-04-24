@@ -1,6 +1,7 @@
 import generateRandomCode from "./code_generator.js";
 
-const socket = new WebSocket("ws://localhost:3000/ws");
+const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
 
 document.addEventListener("DOMContentLoaded", function () {
     // UI Elements
@@ -13,6 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmJoinButton = document.getElementById("confirm-join");
     let back_to_main_button = document.getElementById("back-to-main-screen");
     let back_to_main_button_from_join = document.getElementById("back-to-main-screen-from-join");
+    let profile_button = document.getElementById("profile-button");
+
+    if (profile_button) {
+        profile_button.addEventListener("click", function () {
+            window.location.href = "profile-screen.html";
+        });
+    }
 
     // Navigate back to main screen
     if (back_to_main_button) {

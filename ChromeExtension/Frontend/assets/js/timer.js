@@ -10,8 +10,10 @@ let yellowBoxes2 = new Set()
 var numMinutes = gameState.timeLimit|| 10;
 var numSeconds = 0;
 
-const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
+var gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
+const gameOverPageWin = "game-over-win.html";
+const gameOverPageLose = "game-over-lose.html";
 
 function countCompletedProblems(playerIndex) {
     return window.currentCorrectSubmissions[playerIndex].filter(Boolean).length;
@@ -30,9 +32,11 @@ function handleGameOver() {
     if (player1Score > player2Score) {
         winner = window.PLAYER1;
         loser = window.PLAYER2;
+        gameOverPage = gameOverPageWin;
     } else if (player2Score > player1Score) {
         winner = window.PLAYER2;
         loser = window.PLAYER1;
+        gameOverPage = gameOverPageLose;
     } else {
         // Tie - use time as tiebreaker
         window.location.href = gameOverPage2;
@@ -72,7 +76,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
 
             if(box && status) {
                 if(status === "Accepted") {
-                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
+                    box.textContent = "🟢";
                     checkForWinner++;
 
                     if(!(yellowBoxes1.has(boxId))) {
@@ -127,7 +131,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
             
             if(box && status) {
                 if(status === "Accepted") {
-                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';
+                    box.textContent = "🟢";
                     checkForWinner++;
                     if(!(yellowBoxes2.has(boxId))) {
                         yellowBoxes2.add(boxId);

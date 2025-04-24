@@ -4,10 +4,14 @@ import { getNextTime, timeFormated, titleToSlug } from "./utils.js";
 const player1Name = localStorage.getItem("player1") || "Player 1";
 const player2Name = localStorage.getItem("player2") || "Player 2";
 const gameId = localStorage.getItem("gameId");
-const socket = new WebSocket("ws://localhost:3000/ws");
+const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
 const NUM_USERS = 2;
-const gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
+var gameOverPage = "assets/yeet_motion_html_files/yeet_motion.html";
 const gameOverPage2 = "assets/yeet_motion_html_files/rip_motion.html";
+const gameOverPageWin = "game-over-win.html";
+const gameOverPageLose = "game-over-lose.html";
+
 let selectedProblems = [];
 let selectedProblemCount;
 let score = [0, 0];
@@ -34,9 +38,11 @@ function handleGameOver() {
     if (player1Score > player2Score) {
         winner = window.PLAYER1;
         loser = window.PLAYER2;
+        gameOverPage = gameOverPageLose;
     } else if (player2Score > player1Score) {
         winner = window.PLAYER2;
         loser = window.PLAYER1;
+        gameOverPage = gameOverPageWin;
     } else {
         // Tie - use time as tiebreaker
         window.location.href = gameOverPage2;
@@ -80,7 +86,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
 
             if(box && status) {
                 if(status === "Accepted") {
-                    box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';     
+                    box.textContent = "🟢";     
                     checkForWinner++;
 
                     if(!(yellowBoxes1.has(boxId))) {
@@ -124,7 +130,7 @@ function updateUI(problemList, problemMapPlayer1, problemMapPlayer2) {
 
         if(box && status) {
             if(status === "Accepted") {
-                box.innerHTML = '<img src="assets/images/checkmark.png" alt="✓" style="width: 30px; height: 30px;">';                    
+                box.textContent = "🟢";                    
                 checkForWinner++;
 
                 if(!(yellowBoxes2.has(boxId))) {

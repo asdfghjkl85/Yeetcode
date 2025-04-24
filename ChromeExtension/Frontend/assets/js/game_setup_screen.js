@@ -50,17 +50,24 @@ function attachScrollListener(pickerElement) {
 
 // Wait for the DOM content to load
 document.addEventListener('DOMContentLoaded', () => {
-  const socket = new WebSocket("ws://localhost:3000/ws");
-  socket.onopen = () => {
+  const BACKEND_API = "https://yeetcode-81k4.onrender.com";
+  const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
+  
+  // Log WebSocket connection status for debugging
+  socket.addEventListener('open', (event) => {
+    console.log("WebSocket connection established successfully");
     socket.send(JSON.stringify({
-        type: "connect",
-        isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
-        isPlayer2Api: localStorage.getItem("isPlayer2Api"),
-        gameId: gameId
-    }))
-}
+      type: "connect",
+      isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
+      isPlayer2Api: localStorage.getItem("isPlayer2Api")
+    }));
+  });
 
-//SET THE GAME STATE
+  socket.addEventListener('error', (event) => {
+    console.error("WebSocket connection error:", event);
+  });
+
+  //SET THE GAME STATE
   let gameState = {
     status: "set_up",
     difficulty: "",
@@ -125,17 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const battleType = document.querySelector('.battle-type-btn.active').textContent.toLowerCase();
 
         // Store game settings in localStorage
-        gameState.difficulty =difficulty;
-        gameState.problemCount = problemCount
-        gameState.timeLimit = timeLimit 
-        gameState.battleType = battleType
-        gameState.status = "in_progress"
+        gameState.difficulty = difficulty;
+        gameState.problemCount = problemCount;
+        gameState.timeLimit = timeLimit;
+        gameState.battleType = battleType;
+        gameState.status = "in_progress";
 
         localStorage.setItem("gameState", JSON.stringify(gameState));
         const gameId = localStorage.getItem("gameId");
         const player1 = localStorage.getItem("player1");
         // Update game status and settings on the backend
-        await fetch(`http://localhost:3000/api/games/${gameId}/status`, {
+        await fetch(`https://yeetcode-81k4.onrender.com/api/games/${gameId}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -150,19 +157,40 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
-        // Navigate to game play screen
-        
-        socket.send(JSON.stringify({
+        // Prepare the WebSocket message
+        const message = JSON.stringify({
           type: "GAME_STARTED_send_2",
           isPlayer1Api: localStorage.getItem("isPlayer1Api"), 
           isPlayer2Api: localStorage.getItem("isPlayer2Api"),
           gameId: localStorage.getItem("gameId"),
-        }));
+        });
 
+        // Check WebSocket state before sending
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(message);
+          console.log("Game start message sent to player 2");
+        } else {
+          console.log("WebSocket not connected, trying to reconnect...");
+          // Try to reconnect and send when connected
+          socket.addEventListener('open', function() {
+            socket.send(message);
+            console.log("Reconnected and sent game start message");
+          });
+        }
+
+        // Navigate to game play screen
         window.location.href = "game-play-screen.html";
       } catch (err) {
         console.error("Failed to start game:", err);
       }
+    });
+  }
+
+  // Add profile button click handler
+  const profileButton = document.getElementById('profile-btn');
+  if (profileButton) {
+    profileButton.addEventListener('click', function() {
+      window.location.href = 'profile-screen.html';
     });
   }
 });
