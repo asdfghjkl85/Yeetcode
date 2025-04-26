@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const response = await fetch("https://yeetcode-81k4.onrender.com/api/auth/signup", {
+            const response = await fetch("https://yeetcode-production-a720.up.railway.app/api/auth/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

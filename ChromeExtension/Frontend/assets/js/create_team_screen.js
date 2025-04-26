@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const backButton = document.getElementById("back-to-main-screen");
 
     // Initialize backend and WebSocket connection
-    const BACKEND_API = "https://yeetcode-81k4.onrender.com";
-    const socket = new WebSocket("wss://yeetcode-81k4.onrender.com/ws");
+    const BACKEND_API = "https://yeetcode-production-a720.up.railway.app";
+    const socket = new WebSocket("wss://yeetcode-production-a720.up.railway.app/ws");
 
     // Log WebSocket connection status for debugging
     socket.addEventListener('open', (event) => {
@@ -102,7 +102,7 @@ function createGame(inviteCodeElement, startGameSetupButton, socket) {
         startGameSetupButton.style.cursor = "not-allowed";
     }
 
-    fetch("https://yeetcode-81k4.onrender.com/api/games", {
+    fetch("https://yeetcode-production-a720.up.railway.app/api/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invitation_code: invCode, username: null })

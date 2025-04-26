@@ -2,7 +2,7 @@ export const userRecentSubmissions = async (username, limit) =>{
     try{ 
         const payload = { username, limit};
 
-        const response = await fetch("https://yeetcode-81k4.onrender.com/api/userRecentSubmissions", {
+        const response = await fetch("https://yeetcode-production-a720.up.railway.app/api/userRecentSubmissions", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json', 
@@ -22,7 +22,7 @@ export const validateUser = async (username) => {
     try {
         const payload = {username};
 
-        const response = await fetch('https://yeetcode-81k4.onrender.com/api/validateUser', {
+        const response = await fetch('https://yeetcode-production-a720.up.railway.app/api/validateUser', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

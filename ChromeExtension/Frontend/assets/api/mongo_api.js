@@ -3,7 +3,7 @@ export const sendGameProblems = async (problems, gameId) => {
     const payload = { problems };
     console.log(" Sending problems to backend:", payload, "Game ID:", gameId);
 
-    const response = await fetch(`https://yeetcode-81k4.onrender.com/api/games/${gameId}/problems`, {
+    const response = await fetch(`https://yeetcode-production-a720.up.railway.app/api/games/${gameId}/problems`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json', 
