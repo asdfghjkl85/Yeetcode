@@ -38,12 +38,3 @@ Yeetcode is a Google Chrome extension where two Leetcode users can battle each o
 
 ### Contributions
 If you want to contribute and/or provide feedback, email us at yeetcode2025@gmail.com
-
-Here are the list of contributors to this project:
-* Leonardo de Farias (https://github.com/Tofudog) [Product Owner]
-* Caleb Jennings [Scrum Master]
-* Aiden Amaya
-* Peace Cyebukayire
-* Chris Embs
-* Sungho Kim
-* Alan Wei
